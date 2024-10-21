@@ -45,6 +45,7 @@ function ordinal_suffix($num) {
             </div>
         </div>
     </div>
+    
     <div class="row">
         <div class="col-md-12">
             <div class="callout callout-info" id="printable">
