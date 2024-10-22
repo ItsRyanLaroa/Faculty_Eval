@@ -789,6 +789,62 @@ function login(){
 		return json_encode($data);
 
 	}
+	
+
+	
+	
+	function view_report() {
+		extract($_POST);
+		$data = array();
+	
+		// Fetch evaluation answers with question text from question_list
+		$get = $this->db->query("
+			SELECT ea.*, q.question 
+			FROM evaluation_answers ea
+			JOIN question_list q ON ea.question_id = q.id
+			WHERE evaluation_id IN (
+				SELECT evaluation_id 
+				FROM evaluation_list 
+				WHERE academic_id = {$_SESSION['academic']['id']} 
+				AND faculty_id = $faculty_id 
+				AND subject_id = $subject_id 
+				AND class_id = $class_id
+			)
+		");
+	
+		// Fetch total evaluations
+		$answered = $this->db->query("
+			SELECT * 
+			FROM evaluation_list 
+			WHERE academic_id = {$_SESSION['academic']['id']} 
+			AND faculty_id = $faculty_id 
+			AND subject_id = $subject_id 
+			AND class_id = $class_id
+		");
+	
+		$rate = array();
+		while ($row = $get->fetch_assoc()) {
+			// Use question text as key in the $rate array
+			if (!isset($rate[$row['question']][$row['rate']])) {
+				$rate[$row['question']][$row['rate']] = 0;
+			}
+			$rate[$row['question']][$row['rate']] += 1; // Count occurrences of each rating per question
+		}
+	
+		$ta = $answered->num_rows; // Total answered evaluations
+		$r = array();
+	
+		foreach ($rate as $qk => $qv) {
+			foreach ($qv as $rk => $rv) {
+				$r[$qk][$rk] = ($rate[$qk][$rk] / $ta) * 100; // Calculate percentage
+			}
+		}
+	
+		$data['tse'] = $ta; // Total students evaluated
+		$data['data'] = $r; // Store the ratings data
+	
+		return json_encode($data);
+	}
 	function get_report(){
 		extract($_POST);
 		$data = array();
@@ -816,7 +872,7 @@ function login(){
 
 	}
 	
-
+	
 	function get_staff_class(){
 		extract($_POST);
 		$data = array();

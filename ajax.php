@@ -168,8 +168,15 @@ if ($action == 'save_class') {
     echo $save;
 }
 
+
 if($action == 'get_report'){
 	$get = $crud->get_report();
+	if($get)
+		echo $get;
+}
+
+if($action == 'view_report'){
+	$get = $crud->view_report();
 	if($get)
 		echo $get;
 }
