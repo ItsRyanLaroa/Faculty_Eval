@@ -60,9 +60,9 @@
 </style>
 
 <div class="nav-bar">
-<a href="./index.php?page=category" class="nav-link nav-category <?php echo (isset($_GET['page']) && $_GET['page'] == 'category') ? 'active' : ''; ?>">Category</a>
+    <a href="./index.php?page=category" class="nav-link nav-category <?php echo (isset($_GET['page']) && $_GET['page'] == 'category') ? 'active' : ''; ?>">Category</a>
     <a href="./index.php?page=semester" class="nav-link nav-semester <?php echo (isset($_GET['page']) && $_GET['page'] == 'semester') ? 'active' : ''; ?>">Semester</a>
-    <a href="./index.php?page=manage_questionnaire" class="nav-link nav-questionnaire <?php echo (isset($_GET['page']) && $_GET['page'] == 'manage_questionnaire') ? 'active' : ''; ?>">Questionnaire</a>
+    <a href="#" class="nav-link nav-questionnaire <?php echo (isset($_GET['page']) && $_GET['page'] == 'questionnaire') ? 'active' : ''; ?>" id="questionnaireLink">Questionnaire</a>
 </div>
 
 <div class="col-lg-12">
@@ -73,12 +73,12 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="card card-outline card-info">
-                            <div class="card-header"><b>Criteria Form</b></div>
+                            <div class="card-header"><b>Category Form</b></div>
                             <div class="card-body">
                                 <form action="" id="manage-criteria">
                                     <input type="hidden" name="id">
                                     <div class="form-group">
-                                        <label for="">Criteria</label>
+                                        <label for="">Category</label>
                                         <input type="text" name="criteria" class="form-control form-control-sm">
                                     </div>
                                 </form>
@@ -152,7 +152,7 @@
 
         // Handle the click event for the "Next" button
         $("#nextToQuestionnaire").click(function() {
-            window.location.href = './index.php?page=manage_questionnaire';
+            window.location.href = './index.php?page=semester';
         });
 
         // Make the criteria list sortable

@@ -182,12 +182,7 @@
               <p>Staff Report</p>
             </a>
           </li> -->
-          <li class="nav-item dropdown">
-            <a href="./index.php?page=archive" class="nav-link nav-archive">
-              <i class="nav-icon fas fa-archive"></i>
-              <p>Archive</p>
-            </a>
-          </li>
+       
           <li class="nav-item">
             <a href="#" class="nav-link nav-edit_user">
               <i class="nav-icon fas fa-user-cog"></i>

@@ -1,195 +1,195 @@
-<?php $faculty_id = $_SESSION['login_id'] ?>
-<?php 
-function ordinal_suffix($num){
+<?php
+include 'db_connect.php';
+
+function ordinal_suffix($num) {
     $num = $num % 100;
-    if($num < 11 || $num > 13){
-         switch($num % 10){
-            case 1: return $num.'st';
-            case 2: return $num.'nd';
-            case 3: return $num.'rd';
+    if ($num < 11 || $num > 13) {
+        switch ($num % 10) {
+            case 1: return $num . 'st';
+            case 2: return $num . 'nd';
+            case 3: return $num . 'rd';
         }
     }
-    return $num.'th';
+    return $num . 'th';
 }
 ?>
 
 <div class="col-lg-12">
-    <div class="row">
-        <div class="col-md-12 mb-1">
-            <div class="d-flex justify-content-end w-100">
-                <button class="btn btn-sm btn-success bg-gradient-success" style="display:none" id="print-btn"><i class="fa fa-print"></i> Print</button>
+    <div class="callout callout-info">
+        <h3 class="text-center">Student Evaluated</h3>
+        <hr>
+        <div class="mb-3" style="width: 100px; margin-left: auto;float:left">
+            <select id="rows-per-page" class="form-control">
+                <option value="5">5 rows</option>
+                <option value="10">10 rows</option>
+                <option value="15">15 rows</option>
+                <option value="20">20 rows</option>
+            </select>
+        </div>
+        <!-- Search Bar -->
+        <div class="input-group mb-3" style="max-width: 20%; margin-left: auto; ">
+            <input type="text" class="form-control" id="search-input" placeholder="Search..." aria-label="Search">
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="fa fa-search"></i></span>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-3">
-            <div class="callout callout-info">
-                <div class="list-group" id="class-list">
-                    
-                </div>
-            </div>
-        </div>
-        <div class="col-md-9">
-            <div class="callout callout-info" id="printable">
-                <div>
-                    <h3 class="text-center">Evaluated Students Report</h3>
-                    <hr>
-                    <table width="100%">
-                        <tr>
-                            <td width="50%"><p><b>Academic Year: <span id="ay"><?php echo $_SESSION['academic']['year'].' '.(ordinal_suffix($_SESSION['academic']['semester'])) ?> Semester</span></b></p></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td width="50%"><p><b>Class: <span id="classField"></span></b></p></td>
-                            <td width="50%"><p><b>Subject: <span id="subjectField"></span></b></p></td>
-                        </tr>
-                    </table>
-                    <p class=""><b>Total Students Evaluated: <span id="tse"></span></b></p>
-                </div>
-                <fieldset class="border border-info p-2 w-100">
-                    <legend class="w-auto">Evaluated Students List</legend>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr class="bg-gradient-secondary">
-                                <th>Name</th>
-                                <th>Student ID</th>
-                                <th>Evaluation Date</th>
-                            </tr>
-                        </thead>
-                        <tbody id="evaluated-students-list">
-                            <!-- Dynamically filled via AJAX -->
-                        </tbody>
-                    </table>
-                </fieldset>
-            </div>
-        </div>
+
+        <!-- Rows per page selector -->
+     
+
+        <table class="table table-bordered styled-table" id="list">
+            <thead class="bg-gradient-secondary">
+                <tr>
+                    <th>Subject</th>
+                    <th>Student Evaluated</th>
+                    <th>Academic Year</th>
+                    <th>Class</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+                $teacher_id = is_array($_SESSION['login_id']) ? $_SESSION['login_id']['id'] : $_SESSION['login_id'];
+
+                $faculty = $conn->query("SELECT 
+                    sl.subject,
+                    CONCAT(st.firstname, ' ', st.lastname) AS student_name,
+                    a.year AS academic_year,
+                    CONCAT(cl.level, ' - ', cl.section) AS class_details,
+                    cl.curriculum
+                FROM evaluation_list r
+                LEFT JOIN subject_list sl ON r.subject_id = sl.id
+                LEFT JOIN student_list st ON r.student_id = st.id
+                LEFT JOIN class_list cl ON r.class_id = cl.id
+                LEFT JOIN academic_list a ON r.academic_id = a.id
+                WHERE r.faculty_id = '$teacher_id'
+                ORDER BY st.lastname ASC");
+
+                while ($row = $faculty->fetch_assoc()): 
+                ?>
+                <tr>
+                    <td><?php echo $row['subject']; ?></td>
+                    <td><?php echo ucwords($row['student_name']); ?></td>
+                    <td><?php echo $row['academic_year'] . ' ' . ordinal_suffix($_SESSION['academic']['semester']) . ' Semester'; ?></td>
+                    <td><?php echo $row['curriculum'] . ' (' . $row['class_details'] . ')'; ?></td>
+                </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+
+        <!-- Pagination controls -->
+        <div id="pagination-controls" class="mt-3 d-flex justify-content-end"></div>
     </div>
 </div>
+
 <style>
-    .list-group-item:hover{
-        color: black !important;
-        font-weight: 700 !important;
+    .bg-gradient-secondary {
+        background: #B31B1C linear-gradient(182deg, #b31b1b, #dc3545) repeat-x !important;
+        color: #fff;
+    }
+    .styled-table tbody tr:nth-of-type(even) {
+        background-color: #f3f3f3;
+    }
+    .input-group, #rows-per-page {
+        margin-bottom: 10px;
+    }
+    #pagination-controls {
+        display: flex;
+        align-items: center;
+    }
+    #pagination-controls button {
+        margin: 0 5px;
+        border: none;
+        padding: 5px 10px;
+        background-color: #007bff;
+        color: #fff;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    #pagination-controls button.active {
+        background-color: #0056b3;
+    }
+    #pagination-controls button:disabled {
+        background-color: #d6d6d6;
+        cursor: not-allowed;
     }
 </style>
-<noscript>
-    <style>
-        table{
-            width:100%;
-            border-collapse: collapse;
-        }
-        table.wborder tr,table.wborder td,table.wborder th{
-            border:1px solid gray;
-            padding: 3px;
-        }
-        table.wborder thead tr{
-            background: #6c757d linear-gradient(180deg,#828a91,#6c757d) repeat-x!important;
-            color: #fff;
-        }
-        .text-center{
-            text-align:center;
-        } 
-    </style>
-</noscript>
+
 <script>
-    $(document).ready(function(){
-        load_class()
-    });
+    $(document).ready(function() {
+        let rowsPerPage = 5;
+        let currentPage = 1;
 
-    function load_class(){
-        start_load()
-        $.ajax({
-            url:"ajax.php?action=get_class",
-            method:'POST',
-            data:{fid:<?php echo $faculty_id ?>},
-            error:function(err){
-                console.log(err)
-                alert_toast("An error occured",'error');
-                end_load();
-            },
-            success:function(resp){
-                if(resp){
-                    resp = JSON.parse(resp);
-                    if(Object.keys(resp).length <= 0 ){
-                        $('#class-list').html('<a href="javascript:void(0)" class="list-group-item list-group-item-action disabled">No data to be display.</a>')
-                    }else{
-                        $('#class-list').html('');
-                        Object.keys(resp).map(k=>{
-                            $('#class-list').append('<a href="javascript:void(0)" data-json=\''+JSON.stringify(resp[k])+'\' data-id="'+resp[k].id+'" class="list-group-item list-group-item-action show-result">'+resp[k].class+' - '+resp[k].subj+'</a>');
-                        });
+        $('#search-input').on('keyup', function() {
+            let value = $(this).val().toLowerCase();
+            filterTable(value);
+        });
+
+        $('#rows-per-page').on('change', function() {
+            rowsPerPage = parseInt($(this).val());
+            currentPage = 1;
+            paginateTable();
+        });
+
+        function filterTable(query) {
+            $('#list tbody tr').each(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(query) > -1);
+            });
+            paginateTable();
+        }
+
+        function paginateTable() {
+            const rows = $('#list tbody tr');
+            const totalRows = rows.length;
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+            rows.hide();
+
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            rows.slice(start, end).show();
+
+            renderPaginationControls(totalPages);
+        }
+
+        function renderPaginationControls(totalPages) {
+            $('#pagination-controls').empty();
+
+            const prevButton = $('<button></button>')
+                .text('Previous')
+                .prop('disabled', currentPage === 1)
+                .on('click', function() {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        paginateTable();
                     }
-                }
-            },
-            complete:function(){
-                end_load();
-                anchor_func();
-                if('<?php echo isset($_GET['rid']) ?>' == 1){
-                    $('.show-result[data-id="<?php echo isset($_GET['rid']) ? $_GET['rid'] : '' ?>"]').trigger('click');
-                }else{
-                    $('.show-result').first().trigger('click');
-                }
-            }
-        });
-    }
+                });
 
-    function anchor_func(){
-        $('.show-result').click(function(){
-            var data = $(this).attr('data-json');
-            data = JSON.parse(data);
-            window.history.pushState({}, null, './index.php?page=evaluated_students&rid='+data.id);
-            load_evaluated_students(<?php echo $faculty_id ?>, data.sid, data.id);
-            $('#subjectField').text(data.subj);
-            $('#classField').text(data.class);
-            $('.show-result.active').removeClass('active');
-            $(this).addClass('active');
-        });
-    }
-
-    function load_evaluated_students($faculty_id, $subject_id, $class_id){
-        start_load();
-        $.ajax({
-            url: 'ajax.php?action=get_evaluated_students',
-            method: 'POST',
-            data: {faculty_id: $faculty_id, subject_id: $subject_id, class_id: $class_id},
-            error: function(err){
-                console.log(err);
-                alert_toast("An error occurred.", "error");
-                end_load();
-            },
-            success: function(resp){
-                if(resp){
-                    resp = JSON.parse(resp);
-                    $('#evaluated-students-list').html('');
-                    if(Object.keys(resp).length <= 0){
-                        $('#evaluated-students-list').html('<tr><td colspan="3" class="text-center">No students have evaluated yet.</td></tr>');
-                        $('#tse').text('0');
-                        $('#print-btn').hide();
-                    } else {
-                        $('#print-btn').show();
-                        $('#tse').text(resp.tse);
-                        resp.data.forEach(function(student){
-                            $('#evaluated-students-list').append('<tr><td>'+student.name+'</td><td>'+student.student_id+'</td><td>'+student.evaluation_date+'</td></tr>');
-                        });
+            const nextButton = $('<button></button>')
+                .text('Next')
+                .prop('disabled', currentPage === totalPages)
+                .on('click', function() {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        paginateTable();
                     }
-                }
-            },
-            complete: function(){
-                end_load();
-            }
-        });
-    }
+                });
 
-    $('#print-btn').click(function(){
-        start_load();
-        var ns = $('noscript').clone();
-        var content = $('#printable').html();
-        ns.append(content);
-        var nw = window.open("Evaluated Students Report", "_blank", "width=900,height=700");
-        nw.document.write(ns.html());
-        nw.document.close();
-        nw.print();
-        setTimeout(function(){
-            nw.close();
-            end_load();
-        }, 750);
+            $('#pagination-controls').append(prevButton);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = $('<button></button>')
+                    .text(i)
+                    .addClass(i === currentPage ? 'active' : '')
+                    .on('click', function() {
+                        currentPage = i;
+                        paginateTable();
+                    });
+                $('#pagination-controls').append(btn);
+            }
+
+            $('#pagination-controls').append(nextButton);
+        }
+
+        paginateTable();
     });
 </script>

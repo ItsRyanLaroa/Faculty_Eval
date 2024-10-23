@@ -845,6 +845,63 @@ function login(){
 	
 		return json_encode($data);
 	}
+	
+    public function get_detailed_report() {
+        extract($_POST);
+        
+        // Prepare the SQL query to fetch the detailed report using the provided report ID.
+        $qry = $this->db->query("SELECT r.*, s.firstname, s.lastname 
+                                  FROM evaluation_list r 
+                                  JOIN student_list s ON r.student_id = s.id 
+                                  WHERE r.id = $id");
+
+        // Check if the query returns any result.
+        if ($qry->num_rows > 0) {
+            $report = $qry->fetch_assoc();
+            
+            // Format the report output as HTML for display in the modal.
+            $html = "<h4>Report for: " . $report['firstname'] . " " . $report['lastname'] . "</h4>";
+            $html .= "<p><strong>Date:</strong> " . $report['date_taken'] . "</p>";
+            $html .= "<p><strong>Evaluation:</strong> " . $report['evaluation'] . "</p>";
+            $html .= "<p><strong>Comments:</strong> " . $report['comments'] . "</p>";
+            // Add more fields if necessary.
+
+            return $html;
+        }
+	}
+	function get_evaluated_students() {
+		extract($_POST);
+		
+		// Prepare SQL query to fetch evaluated students
+		$qry = $this->db->query("SELECT es.student_id, s.firstname, s.lastname, es.date_taken 
+								 FROM evaluation_list es 
+								 JOIN student_list s ON es.student_id = s.id 
+								 WHERE es.faculty_id = $faculty_id 
+								 AND es.subject_id = $subject_id 
+								 AND es.class_id = $class_id");
+	
+		$data = [];
+		$tse = 0;
+	
+		// Check if there are results
+		if ($qry->num_rows > 0) {
+			$data['data'] = [];
+			while ($row = $qry->fetch_assoc()) {
+				$data['data'][] = [
+					'student_id' => $row['student_id'],
+					'name' => $row['firstname'] . ' ' . $row['lastname'],
+					'date_taken' => $row['date_taken']
+				];
+				$tse++;
+			}
+		}
+	
+		// Total Students Evaluated
+		$data['tse'] = $tse;
+	
+		return json_encode($data);
+	}
+	
 	function get_report(){
 		extract($_POST);
 		$data = array();

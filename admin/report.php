@@ -1,275 +1,302 @@
+<?php
+include 'db_connect.php';
 
-<?php $faculty_id = isset($_GET['fid']) ? $_GET['fid'] : '' ; ?>
-<?php 
-function ordinal_suffix($num){
-    $num = $num % 100; // protect against large numbers
-    if($num < 11 || $num > 13){
-         switch($num % 10){
-            case 1: return $num.'st';
-            case 2: return $num.'nd';
-            case 3: return $num.'rd';
+function ordinal_suffix($num) {
+    $num = $num % 100; // Protect against large numbers
+    if ($num < 11 || $num > 13) {
+        switch ($num % 10) {
+            case 1: return $num . 'st';
+            case 2: return $num . 'nd';
+            case 3: return $num . 'rd';
         }
     }
-    return $num.'th';
+    return $num . 'th';
 }
 ?>
+
 <div class="col-lg-12">
-	<div class="callout callout-info">
-		<div class="d-flex w-100 justify-content-center align-items-center">
-			<label for="faculty">Select Faculty</label>
-			<div class=" mx-2 col-md-4">
-			<select name="" id="faculty_id" class="form-control form-control-sm select2">
-				<option value=""></option>
-				<?php 
-				$faculty = $conn->query("SELECT *,concat(firstname,' ',lastname) as name FROM faculty_list order by concat(firstname,' ',lastname) asc");
-				$f_arr = array();
-				$fname = array();
-				while($row=$faculty->fetch_assoc()):
-					$f_arr[$row['id']]= $row;
-					$fname[$row['id']]= ucwords($row['name']);
-				?>
-				<option value="<?php echo $row['id'] ?>" <?php echo isset($faculty_id) && $faculty_id == $row['id'] ? "selected" : "" ?>><?php echo ucwords($row['name']) ?></option>
-				<?php endwhile; ?>
-			</select>
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-12 mb-1">
-			<div class="d-flex justify-content-end w-100">
-				<button class="btn btn-sm btn-success bg-gradient-success" style="display:none" id="print-btn"><i class="fa fa-print"></i> Print</button>
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-3">
-			<div class="callout callout-info">
-				<div class="list-group" id="class-list">
-					
-				</div>
-			</div>
-		</div>
-		<div class="col-md-9">
-			<div class="callout callout-info" id="printable">
-			<div>
-			<h3 class="text-center">Evaluation Report</h3>
-			<hr>
-			<table width="100%">
-					<tr>
-						<td width="50%"><p><b>Faculty: <span id="fname"></span></b></p></td>
-						<td width="50%"><p><b>Academic Year: <span id="ay"><?php echo $_SESSION['academic']['year'].' '.(ordinal_suffix($_SESSION['academic']['semester'])) ?> Semester</span></b></p></td>
-					</tr>
-					<tr>
-						<td width="50%"><p><b>Class: <span id="classField"></span></b></p></td>
-						<td width="50%"><p><b>Subject: <span id="subjectField"></span></b></p></td>
-					</tr>
-			</table>
-				<p class=""><b>Total Student Evaluated: <span id="tse"></span></b></p>
-			</div>
-				<fieldset class="border border-info p-2 w-100">
-				   <legend  class="w-auto">Rating Legend</legend>
-				   <p>5 = Strongly Agree, 4 = Agree, 3 = Uncertain, 2 = Disagree, 1 = Strongly Disagree</p>
-				</fieldset>
-				<?php 
-							$q_arr = array();
-						$criteria = $conn->query("SELECT * FROM criteria_list where id in (SELECT criteria_id FROM question_list where academic_id = {$_SESSION['academic']['id']} ) order by abs(order_by) asc ");
-						while($crow = $criteria->fetch_assoc()):
-					?>
-					<table class="table table-condensed wborder">
-						<thead>
-							<tr class="bg-gradient-secondary">
-								<th class=" p-1"><b><?php echo $crow['criteria'] ?></b></th>
-								<th width="5%" class="text-center">1</th>
-								<th width="5%" class="text-center">2</th>
-								<th width="5%" class="text-center">3</th>
-								<th width="5%" class="text-center">4</th>
-								<th width="5%" class="text-center">5</th>
-							</tr>
-						</thead>
-						<tbody class="tr-sortable">
-							<?php 
-							$questions = $conn->query("SELECT * FROM question_list where criteria_id = {$crow['id']} and academic_id = {$_SESSION['academic']['id']} order by abs(order_by) asc ");
-							while($row=$questions->fetch_assoc()):
-							$q_arr[$row['id']] = $row;
-							?>
-							<tr class="bg-white">
-								<td class="p-1" width="40%">
-									<?php echo $row['question'] ?>
-								</td>
-								<?php for($c=1;$c<=5;$c++): ?>
-								<td class="text-center">
-									<span class="rate_<?php echo $c.'_'.$row['id'] ?> rates"></span>
-			                      </div>
-								</td>
-								<?php endfor; ?>
-							</tr>
-							<?php endwhile; ?>
-						</tbody>
-					</table>
-					<?php endwhile; ?>
-			</div>
-		</div>
-	</div>
+    <div class="callout callout-info">
+
+        <div class="input-group mb-3" style="max-width: 40%; margin-left: auto;">
+         
+           
+        </div>
+
+        <table class="table table-bordered styled-table" id="evaluation-table">
+            <thead class="bg-gradient-secondary">
+                <tr>
+                    <th>Faculty Name</th>
+                    <th>Academic Year</th>
+                    <th>Subject</th>
+                    <th>Student Evaluated</th>
+                    <th>Class</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+                $faculty = $conn->query("SELECT f.id, 
+                                                CONCAT(f.firstname, ' ', f.lastname) AS faculty_name, 
+                                                r.academic_id, 
+                                                a.year AS academic_year, 
+                                                r.class_id, 
+                                                cl.curriculum, 
+                                                CONCAT(cl.level, ' - ', cl.section) AS class_details, 
+                                                r.subject_id, 
+                                                sl.subject,
+                                                CONCAT(st.firstname, ' ', st.lastname) AS student_name
+                                        FROM faculty_list f
+                                        LEFT JOIN evaluation_list r ON r.faculty_id = f.id
+                                        LEFT JOIN class_list cl ON r.class_id = cl.id
+                                        LEFT JOIN subject_list sl ON r.subject_id = sl.id
+                                        LEFT JOIN student_list st ON r.student_id = st.id
+                                        LEFT JOIN academic_list a ON r.academic_id = a.id
+                                        WHERE r.academic_id = {$_SESSION['academic']['id']}
+                                        ORDER BY CONCAT(f.firstname, ' ', f.lastname) ASC");
+
+                while ($row = $faculty->fetch_assoc()): 
+                ?>
+                <tr>
+                    <td><?php echo ucwords($row['faculty_name']); ?></td>
+                    <td><?php echo $row['academic_year'] . ' ' . ordinal_suffix($_SESSION['academic']['semester']) . ' Semester'; ?></td>
+                    <td data-subject-id="<?php echo $row['subject_id']; ?>"><?php echo $row['subject']; ?></td>
+                    <td><?php echo ucwords($row['student_name']); ?></td>
+                    <td data-class-id="<?php echo $row['class_id']; ?>">
+                        <?php echo $row['curriculum'] . ' (' . $row['class_details'] . ')'; ?>
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-info view-report" data-id="<?php echo $row['id']; ?>" href="javascript:void(0)">
+                            <i class="fa fa-eye"></i> View Report
+                        </a>
+                    </td>
+                </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal for displaying the report -->
+<div class="modal fade" id="report-modal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel">Evaluation Report</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Report will be populated here -->
+                <div id="report-content"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
 <style>
-	.bg-gradient-secondary {
-    background: #B31B1C linear-gradient(182deg, #b31b1b, #dc3545) repeat-x !important;
-    color: #fff;
-}
-	.list-group-item:hover{
-		color: black !important;
-		font-weight: 700 !important;
-	}
-	.list-group-item.active {
-    z-index: 2;
-    color: #fff;
-    background-color: #b31b1b;
-    border-color: black;
-}
-</style>
-<noscript>
-	<style>
-		table{
-			width:100%;
-			border-collapse: collapse;
-		}
-		table.wborder tr,table.wborder td,table.wborder th{
-			border:1px solid gray;
-			padding: 3px
-		}
-		table.wborder thead tr{
-			background: #6c757d linear-gradient(180deg,#828a91,#6c757d) repeat-x!important;
-    		color: #fff;
-		}
-		.text-center{
-			text-align:center;
-		} 
-		.text-right{
-			text-align:right;
-		} 
-		.text-left{
-			text-align:left;
-		} 
-	</style>
-</noscript>
-<script>
-	$(document).ready(function(){
-		$('#faculty_id').change(function(){
-			if($(this).val() > 0)
-			window.history.pushState({}, null, './index.php?page=report&fid='+$(this).val());
-			load_class()
-		})
-		if($('#faculty_id').val() > 0)
-			load_class()
-	})
-	function load_class(){
-		start_load()
-		var fname = <?php echo json_encode($fname) ?>;
-		$('#fname').text(fname[$('#faculty_id').val()])
-		$.ajax({
-			url:"ajax.php?action=get_class",
-			method:'POST',
-			data:{fid:$('#faculty_id').val()},
-			error:function(err){
-				console.log(err)
-				alert_toast("An error occured",'error')
-				end_load()
-			},
-			success:function(resp){
-				if(resp){
-					resp = JSON.parse(resp)
-					if(Object.keys(resp).length <= 0 ){
-						$('#class-list').html('<a href="javascript:void(0)" class="list-group-item list-group-item-action disabled">No data to be display.</a>')
-					}else{
-						$('#class-list').html('')
-						Object.keys(resp).map(k=>{
-						$('#class-list').append('<a href="javascript:void(0)" data-json=\''+JSON.stringify(resp[k])+'\' data-id="'+resp[k].id+'" class="list-group-item list-group-item-action show-result">'+resp[k].class+' - '+resp[k].subj+'</a>')
-						})
+    .bg-gradient-secondary {
+        background: #B31B1C linear-gradient(182deg, #b31b1b, #dc3545) repeat-x !important;
+        color: #fff;
+    }
 
-					}
-				}
-			},
-			complete:function(){
-				end_load()
-				anchor_func()
-				if('<?php echo isset($_GET['rid']) ?>' == 1){
-					$('.show-result[data-id="<?php echo isset($_GET['rid']) ? $_GET['rid'] : '' ?>"]').trigger('click')
-				}else{
-					$('.show-result').first().trigger('click')
-				}
-			}
-		})
-	}
-	function anchor_func(){
-		$('.show-result').click(function(){
-			var vars = [], hash;
-			var data = $(this).attr('data-json')
-				data = JSON.parse(data)
-			var _href = location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-			for(var i = 0; i < _href.length; i++)
-				{
-					hash = _href[i].split('=');
-					vars[hash[0]] = hash[1];
-				}
-			window.history.pushState({}, null, './index.php?page=report&fid='+vars.fid+'&rid='+data.id);
-			load_report(vars.fid,data.sid,data.id);
-			$('#subjectField').text(data.subj)
-			$('#classField').text(data.class)
-			$('.show-result.active').removeClass('active')
-			$(this).addClass('active')
-		})
-	}
-	function load_report($faculty_id, $subject_id,$class_id){
-		if($('#preloader2').length <= 0)
-		start_load()
-		$.ajax({
-			url:'ajax.php?action=get_report',
-			method:"POST",
-			data:{faculty_id: $faculty_id,subject_id:$subject_id,class_id:$class_id},
-			error:function(err){
-				console.log(err)
-				alert_toast("An Error Occured.","error");
-				end_load()
-			},
-			success:function(resp){
-				if(resp){
-					resp = JSON.parse(resp)
-					if(Object.keys(resp).length <= 0){
-						$('.rates').text('')
-						$('#tse').text('')
-						$('#print-btn').hide()
-					}else{
-						$('#print-btn').show()
-						$('#tse').text(resp.tse)
-						$('.rates').text('-')
-						var data = resp.data
-						Object.keys(data).map(q=>{
-							Object.keys(data[q]).map(r=>{
-								console.log($('.rate_'+r+'_'+q),data[q][r])
-								$('.rate_'+r+'_'+q).text(data[q][r]+'%')
-							})
-						})
-					}
-					
-				}
-			},
-			complete:function(){
-				end_load()
-			}
-		})
-	}
-	$('#print-btn').click(function(){
-		start_load()
-		var ns =$('noscript').clone()
-		var content = $('#printable').html()
-		ns.append(content)
-		var nw = window.open("Report","_blank","width=900,height=700")
-		nw.document.write(ns.html())
-		nw.document.close()
-		nw.print()
-		setTimeout(function(){
-			nw.close()
-			end_load()
-		},750)
-	})
+    .modal.fade .modal-dialog {
+        transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+
+    .modal.show .modal-dialog {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .modal-content {
+        position: fixed; /* Use fixed positioning to keep it centered on the viewport */
+        top: 50%; /* Center vertically */
+        left: 50%; /* Center horizontally */
+        transform: translate(-47%, 1%);
+        display: flex;
+        flex-direction: column;
+        width: 200%; /* Make it responsive */
+        max-width: 1000px; /* Set a max-width for larger screens */
+        pointer-events: auto;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid rgba(0, 0, 0, .2);
+        border-radius: .3rem;
+        box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .5);
+        outline: 0;
+        padding: 20px; /* Add padding for better spacing */
+        box-sizing: border-box; 
+    }
+
+    /* Additional Styles for the Search Bar */
+    .input-group {
+        margin-bottom: 20px; /* Space between search bar and table */
+    }
+    table.table-bordered.dataTable tbody th, table.table-bordered.dataTable tbody td {
+    border-bottom-width: 0;
+    border: none;
+    color: #333;
+    font-weight: 500; /* Add slight boldness */
+}
+/* General table styles */
+table.table-bordered {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 20px 0;
+    font-size: 0.95rem;
+    background-color: #fff;
+    color: #333;
+}
+
+table.table-bordered th, 
+table.table-bordered td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+    vertical-align: middle;
+}
+
+/* Header style */
+thead th {
+    background: #dc143c; /* Red background for table headers */
+    color: #f3f3f3; /* Light text color for contrast */
+    font-weight: bold;
+    border-bottom: 2px solid #b31b1c;
+    text-transform: uppercase;
+}
+
+/* Styled table rows */
+tbody tr {
+    border-bottom: 1px solid #ddd; /* Light gray borders between rows */
+    transition: background-color 0.3s ease; /* Smooth hover transition */
+}
+
+tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3; /* Light gray for alternate rows */
+}
+
+tbody tr:last-of-type {
+    border-bottom: 2px solid #009879; /* Add a distinctive bottom border */
+}
+
+/* Hover effect */
+tbody tr:hover {
+    background-color: #f1f1f1; /* Slightly darker gray on hover */
+}
+
+/* Search bar styling */
+.input-group {
+    margin-bottom: 20px;
+    max-width: 400px;
+}
+
+.input-group .form-control {
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.input-group-text {
+    background-color: #b31b1b;
+    color: #fff;
+    border: none;
+    border-radius: 0;
+}
+
+/* Modal content style */
+.modal-content {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Button styles */
+.btn-info {
+    color: #fff;
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #117a8b;
+}
+
+/* Adjust table header */
+.bg-gradient-secondary {
+    background: #B31B1C linear-gradient(182deg, #b31b1b, #dc3545);
+    color: #fff;
+}
+
+/* Card header */
+.card-header {
+    background-color: transparent;
+    border-bottom: none;
+    padding: .75rem 1.25rem;
+    position: relative;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+}
+
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Initialize DataTables
+        var table = $('#evaluation-table').DataTable();
+
+        // Filter function for the search bar
+        $('#search-input').on('keyup', function() {
+            table.search(this.value).draw(); // Use DataTables search functionality
+        });
+
+        $('.view-report').click(function() {
+            var faculty_id = $(this).data('id');
+            var subject_id = $(this).closest('tr').find('td[data-subject-id]').data('subject-id');
+            var class_id = $(this).closest('tr').find('td[data-class-id]').data('class-id');
+
+            $.ajax({
+                url: 'ajax.php?action=view_report',
+                method: 'POST',
+                data: {
+                    faculty_id: faculty_id,
+                    subject_id: subject_id,
+                    class_id: class_id
+                },
+                success: function(response) {
+                    var data = JSON.parse(response);
+                    displayReport(data);
+                },
+                error: function(err) {
+                    console.error('Error fetching report:', err);
+                }
+            });
+        });
+
+        function displayReport(data) {
+            var reportHtml = `<h4>Total Students Evaluated: ${data.tse}</h4>`;
+            reportHtml += `<table class="table table-bordered"><thead><tr><th>Question</th><th>Rating 1</th><th>Rating 2</th><th>Rating 3</th><th>Rating 4</th><th>Rating 5</th></tr></thead><tbody>`;
+
+            $.each(data.data, function(question, ratings) {
+                reportHtml += `<tr>`;
+                reportHtml += `<td>${question}</td>`;
+                for (var i = 1; i <= 5; i++) {
+                    reportHtml += `<td>${ratings[i] ? ratings[i].toFixed(2) + '%' : '0%'}</td>`;
+                }
+                reportHtml += `</tr>`;
+            });
+
+            reportHtml += `</tbody></table>`;
+
+            // Display the report in a modal
+            $('#report-content').html(reportHtml);
+            $('#report-modal').modal('show');
+        }
+    });
 </script>
+
