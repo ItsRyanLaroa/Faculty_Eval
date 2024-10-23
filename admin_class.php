@@ -791,8 +791,6 @@ function login(){
 	}
 	
 
-	
-	
 	function view_report() {
 		extract($_POST);
 		$data = array();

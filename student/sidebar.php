@@ -42,34 +42,38 @@
   
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
   <div class="dropdown">
-      <a href="./" class="brand-link">
+    <a href="./" class="brand-link">
       <img src="images/feslogo.png" class="brand">
-      <img src="images/file.png"  class="brand">
-      </a>
-    </div>
-    <div class="sidebar ">
-      <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column nav-flat" data-widget="treeview" role="menu" data-accordion="false">
-         <li class="nav-item dropdown">
-            <a href="./" class="nav-link nav-home">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
-              <p>
-                Dashboard
-              </p>
-            </a>
-          </li>
-          <li class="nav-item dropdown">
-            <a href="./index.php?page=evaluate" class="nav-link nav-evaluate">
-              <i class="nav-icon fas fa-th-list"></i>
-              <p>
-                Evaluate
-              </p>
-            </a>
-          </li> 
-        </ul>
-      </nav>
-    </div>
-  </aside>
+      <img src="images/file.png" class="brand">
+    </a>
+  </div>
+  <div class="sidebar">
+    <nav class="mt-2">
+      <ul class="nav nav-pills nav-sidebar flex-column nav-flat" data-widget="treeview" role="menu" data-accordion="false">
+        <li class="nav-item dropdown">
+          <a href="./" class="nav-link nav-home">
+            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <p>Dashboard</p>
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a href="./index.php?page=evaluate" class="nav-link nav-evaluate">
+            <i class="nav-icon fas fa-th-list"></i>
+            <p>Evaluate</p>
+          </a>
+        </li> 
+        <!-- New Nav Item for Evaluation Records -->
+        <li class="nav-item dropdown">
+          <a href="./index.php?page=evaluation_records" class="nav-link nav-evaluation-records">
+            <i class="nav-icon fas fa-book"></i>
+            <p>Evaluation Records</p>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</aside>
+
   <script>
   	$(document).ready(function(){
       var page = '<?php echo isset($_GET['page']) ? $_GET['page'] : 'home' ?>';

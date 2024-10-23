@@ -16,8 +16,9 @@ function ordinal_suffix($num) {
 
 <div class="col-lg-12">
     <div class="callout callout-info">
-        <h3 class="text-center">Student Evaluated</h3>
-        <hr>
+        <h3 class="text-center">Student Evaluations</h3>
+        
+        <!-- Rows per page selector -->
         <div class="mb-3" style="width: 100px; margin-left: auto;float:left">
             <select id="rows-per-page" class="form-control">
                 <option value="5">5 rows</option>
@@ -27,48 +28,48 @@ function ordinal_suffix($num) {
             </select>
         </div>
         <!-- Search Bar -->
-        <div class="input-group mb-3" style="max-width: 20%; margin-left: auto; ">
+        <div class="input-group mb-3" style="max-width: 20%; margin-left: auto;">
             <input type="text" class="form-control" id="search-input" placeholder="Search..." aria-label="Search">
             <div class="input-group-append">
                 <span class="input-group-text"><i class="fa fa-search"></i></span>
             </div>
         </div>
 
-        <!-- Rows per page selector -->
-     
-
         <table class="table table-bordered styled-table" id="list">
             <thead class="bg-gradient-secondary">
                 <tr>
+                    <th>Faculty</th>
                     <th>Subject</th>
-                    <th>Student Evaluated</th>
                     <th>Academic Year</th>
                     <th>Class</th>
                 </tr>
             </thead>
             <tbody>
                 <?php 
-                $teacher_id = is_array($_SESSION['login_id']) ? $_SESSION['login_id']['id'] : $_SESSION['login_id'];
+                $student_id = $_SESSION['login_id'];
 
-                $faculty = $conn->query("SELECT 
+                // Fetch unique evaluations for the logged-in student
+                $evaluations = $conn->query("SELECT DISTINCT 
+                    CONCAT(f.lastname, ', ', f.firstname) AS faculty_name,
                     sl.subject,
-                    CONCAT(st.firstname, ' ', st.lastname) AS student_name,
                     a.year AS academic_year,
                     CONCAT(cl.level, ' - ', cl.section) AS class_details,
                     cl.curriculum
                 FROM evaluation_list r
                 LEFT JOIN subject_list sl ON r.subject_id = sl.id
-                LEFT JOIN student_list st ON r.student_id = st.id
+                LEFT JOIN faculty_list f ON r.faculty_id = f.id
                 LEFT JOIN class_list cl ON r.class_id = cl.id
                 LEFT JOIN academic_list a ON r.academic_id = a.id
-                WHERE r.faculty_id = '$teacher_id'
-                ORDER BY st.lastname ASC");
+                WHERE r.student_id = '$student_id'
+                GROUP BY r.student_id, f.id, sl.subject, a.year, cl.id
+                ORDER BY f.lastname ASC");
 
-                while ($row = $faculty->fetch_assoc()): 
+                // Display each unique evaluation entry
+                while ($row = $evaluations->fetch_assoc()): 
                 ?>
                 <tr>
+                    <td><?php echo ucwords($row['faculty_name']); ?></td>
                     <td><?php echo $row['subject']; ?></td>
-                    <td><?php echo ucwords($row['student_name']); ?></td>
                     <td><?php echo $row['academic_year'] . ' ' . ordinal_suffix($_SESSION['academic']['semester']) . ' Semester'; ?></td>
                     <td><?php echo $row['curriculum'] . ' (' . $row['class_details'] . ')'; ?></td>
                 </tr>
@@ -76,10 +77,10 @@ function ordinal_suffix($num) {
             </tbody>
         </table>
 
-
         <div id="pagination-controls" class="mt-3 d-flex justify-content-end"></div>
     </div>
 </div>
+
 
 <style>
     .bg-gradient-secondary {
