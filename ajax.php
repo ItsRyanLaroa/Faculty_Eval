@@ -147,6 +147,12 @@ if($action == 'save_restriction'){
 	if($save)
 		echo $save;
 }
+if ($action == 'insert_restriction') {
+    $save = $crud->insert_restriction();
+    echo $save;  
+}
+
+
 if($action == 'save_staff_restriction'){
 	$save = $crud->save_staff_restriction();
 	if($save)

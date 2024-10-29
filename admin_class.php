@@ -606,7 +606,48 @@ function login(){
 			return 1;
 		}
 	}
-	function delete_student(){
+	// admin_class.php
+	function insert_restriction() {
+		extract($_POST);
+		$filtered = implode(",", array_filter($rid));
+		
+		// Delete existing records not in the filtered list
+		if (!empty($filtered)) {
+			$this->db->query("DELETE FROM restriction_list WHERE id NOT IN ($filtered) AND academic_id = $academic_id");
+		} else {
+			$this->db->query("DELETE FROM restriction_list WHERE academic_id = $academic_id");
+		}
+		
+		// Prepare to insert records
+		foreach ($rid as $k => $v) {
+			// Ensure that the values are properly escaped to prevent SQL injection
+			$faculty_id = intval($faculty_id[$k]);
+			$class_id = intval($class_id[$k]);
+			$subject_id = intval($subject_id[$k]);
+	
+			// Prepare the insert query
+			$data = [
+				'academic_id' => intval($academic_id),
+				'faculty_id' => $faculty_id,
+				'class_id' => $class_id,
+				'subject_id' => $subject_id
+			];
+	
+			// Construct the INSERT statement
+			$columns = implode(", ", array_keys($data));
+			$values = implode(", ", array_map(function ($value) {
+				return "'" . $value . "'";
+			}, $data));
+	
+			// Execute the insert query
+			$this->db->query("INSERT INTO restriction_list ($columns) VALUES ($values)");
+		}
+		
+		return 1;
+	}
+	
+	
+		function delete_student(){
 		extract($_POST);
 		$delete = $this->db->query("DELETE FROM student_list where id = ".$id);
 		if($delete)
@@ -678,26 +719,49 @@ function login(){
 			return 1;
 		}
 	}
-	function save_restriction(){
+	function save_restriction() {
 		extract($_POST);
-		$filtered = implode(",",array_filter($rid));
-		if(!empty($filtered))
-			$this->db->query("DELETE FROM restriction_list where id not in ($filtered) and academic_id = $academic_id");
-		else
-			$this->db->query("DELETE FROM restriction_list where  academic_id = $academic_id");
-		foreach($rid as $k => $v){
-			$data = " academic_id = $academic_id ";
-			$data .= ", faculty_id = {$faculty_id[$k]} ";
-			$data .= ", class_id = {$class_id[$k]} ";
-			$data .= ", subject_id = {$subject_id[$k]} ";
-			if(empty($v)){
-				$save[] = $this->db->query("INSERT INTO restriction_list set $data ");
-			}else{
-				$save[] = $this->db->query("UPDATE restriction_list set $data where id = $v ");
+		$data = "";
+	
+		foreach ($_POST as $k => $v) {
+			if (!in_array($k, array('id')) && !is_numeric($k)) {
+				if (empty($data)) {
+					$data .= " $k='$v' ";
+				} else {
+					$data .= ", $k='$v' ";
+				}
 			}
 		}
-			return 1;
+	
+		// Check if a restriction with the same class_id and subject_id exists, excluding the current record if updating
+		$check = $this->db->query("SELECT * FROM restriction_list WHERE class_id = '$class_id' AND subject_id = '$subject_id'" . (!empty($id) ? " AND id != {$id}" : ''))->num_rows;
+	
+		if ($check > 0) {
+			return 2; // Duplicate class_id and subject_id combination found
+		}
+	
+		if (empty($id)) {
+			// Fetch the next ID based on the maximum ID in the restriction_list table
+			$result = $this->db->query("SELECT IFNULL(MAX(id), 0) + 1 AS next_id FROM restriction_list");
+			$next_id = $result->fetch_assoc()['next_id'];
+	
+			// Insert a new restriction with the calculated next ID
+			$save = $this->db->query("INSERT INTO restriction_list SET id = $next_id, $data");
+		} else {
+			// Update an existing restriction
+			$save = $this->db->query("UPDATE restriction_list SET $data WHERE id = $id");
+		}
+	
+		if ($save) {
+			return 1; // Successfully saved or updated
+		}
+		return 0; // Error occurred
 	}
+	
+	
+	
+	
+	
 	function save_staff_restriction(){
 		extract($_POST);
 		$filtered = implode(",",array_filter($rid));

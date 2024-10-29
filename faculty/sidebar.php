@@ -42,7 +42,6 @@
       background-color: #dc143c;
     }
 </style>
-
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <div class="dropdown">
         <a href="./" class="brand-link">
@@ -59,24 +58,28 @@
                         <p>Dashboard</p>
                     </a>
                 </li>
-      
                 <li class="nav-item dropdown">
                     <a href="./index.php?page=result" class="nav-link nav-result">
                         <i class="nav-icon fas fa-th-list"></i>
                         <p>Evaluation Result</p>
                     </a>
                 </li>
-
                 <li class="nav-item dropdown">
-                    <a href="./index.php?page=assessment_record" class="nav-link nav-assessment">
-                        <i class="nav-icon fas fa-file-alt"></i> <!-- New icon for Assessment Record -->
-                        <p>Assessment Record</p>
+                    <a href="./index.php?page=evaluation_record" class="nav-link nav-assessment">
+                        <i class="nav-icon fas fa-file-alt"></i>
+                        <p>Evaluation Record</p>
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a href="./index.php?page=subject" class="nav-link nav-subject">
+                        <i class="nav-icon fas fa-book"></i> <!-- New icon for Subject -->
+                        <p>Subject</p>
                     </a>
                 </li>
             </ul>
         </nav>
     </div>
-</aside>
+</aside> 
 
 <script>
     $(document).ready(function(){

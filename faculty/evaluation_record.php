@@ -1,4 +1,4 @@
-<?php 
+<?php
 include 'db_connect.php';
 
 function ordinal_suffix($num) {
@@ -16,7 +16,7 @@ function ordinal_suffix($num) {
 
 <div class="col-lg-12">
     <div class="callout callout-info">
-        <h3 class="text-center">List of teachers you've evaluated</h3>
+        <h3 class="text-center">Student Evaluated</h3>
 
         <!-- Search Bar -->
         <div class="input-group mb-3" style="max-width: 20%; margin-left: auto;">
@@ -28,25 +28,23 @@ function ordinal_suffix($num) {
 
         <div id="evaluation-cards" class="row">
             <?php 
-            $student_id = $_SESSION['login_id'];
+            $teacher_id = is_array($_SESSION['login_id']) ? $_SESSION['login_id']['id'] : $_SESSION['login_id'];
 
-            // Fetch unique evaluations for the logged-in student
-            $evaluations = $conn->query("SELECT DISTINCT 
-                CONCAT(f.lastname, ', ', f.firstname) AS faculty_name,
+            // Fetch evaluations for the logged-in teacher
+            $evaluations = $conn->query("SELECT 
                 sl.subject,
+                CONCAT(st.firstname, ' ', st.lastname) AS student_name,
                 a.year AS academic_year,
                 CONCAT(cl.level, ' - ', cl.section) AS class_details,
                 cl.curriculum,
-                r.faculty_id,
-                f.avatar
+                st.avatar
             FROM evaluation_list r
             LEFT JOIN subject_list sl ON r.subject_id = sl.id
-            LEFT JOIN faculty_list f ON r.faculty_id = f.id
+            LEFT JOIN student_list st ON r.student_id = st.id
             LEFT JOIN class_list cl ON r.class_id = cl.id
             LEFT JOIN academic_list a ON r.academic_id = a.id
-            WHERE r.student_id = '$student_id'
-            GROUP BY r.student_id, f.id, sl.subject, a.year, cl.id
-            ORDER BY f.lastname ASC");
+            WHERE r.faculty_id = '$teacher_id'
+            ORDER BY st.lastname ASC");
 
             while ($row = $evaluations->fetch_assoc()): 
                 $avatar = !empty($row['avatar']) ? 'assets/uploads/' . $row['avatar'] : 'assets/uploads/default_avatar.png';
@@ -55,11 +53,12 @@ function ordinal_suffix($num) {
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
-                            <div class="user-icon bg-gradient-secondary d-flex justify-content-center align-items-center" style="width: 100px; height: 100px; border-radius: 50%;">
-                                <img src="<?php echo $avatar; ?>" alt="Avatar" class="user-img border" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                            <div class="user-icon bg-gradient-secondary d-flex justify-content-center align-items-center" style="width: 100px; height: 100px; border-radius: 50%;"> 
+                                    <img src="<?php echo $avatar; ?>" alt="Avatar" class="user-img border" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+
                             </div>
                             <div class="ml-3">
-                                <h5 class="card-title mb-0"><?php echo ucwords($row['faculty_name']); ?></h5>
+                                <h5 class="card-title mb-0"><?php echo ucwords($row['student_name']); ?></h5>
                                 <p class="card-text mb-1">Subject: <?php echo $row['subject']; ?></p>
                                 <p class="card-text mb-1">Academic Year: <?php echo $row['academic_year'] . ' ' . ordinal_suffix($_SESSION['academic']['semester']) . ' Semester'; ?></p>
                                 <p class="card-text mb-0">Class: <?php echo $row['curriculum'] . ' (' . $row['class_details'] . ')'; ?></p>

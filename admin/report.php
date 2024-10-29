@@ -16,63 +16,67 @@ function ordinal_suffix($num) {
 
 <div class="col-lg-12">
     <div class="callout callout-info">
-
         <div class="input-group mb-3" style="max-width: 40%; margin-left: auto;">
-         
-           
+            <input type="text" id="search-input" class="form-control" placeholder="Search...">
+            <div class="input-group-append">
+                <span class="input-group-text">Search</span>
+            </div>
         </div>
 
-        <table class="table table-bordered styled-table" id="evaluation-table">
-            <thead class="bg-gradient-secondary">
-                <tr>
-                    <th>Faculty Name</th>
-                    <th>Academic Year</th>
-                    <th>Subject</th>
-                    <th>Student Evaluated</th>
-                    <th>Class</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php 
-                $faculty = $conn->query("SELECT f.id, 
-                                                CONCAT(f.firstname, ' ', f.lastname) AS faculty_name, 
-                                                r.academic_id, 
-                                                a.year AS academic_year, 
-                                                r.class_id, 
-                                                cl.curriculum, 
-                                                CONCAT(cl.level, ' - ', cl.section) AS class_details, 
-                                                r.subject_id, 
-                                                sl.subject,
-                                                CONCAT(st.firstname, ' ', st.lastname) AS student_name
-                                        FROM faculty_list f
-                                        LEFT JOIN evaluation_list r ON r.faculty_id = f.id
-                                        LEFT JOIN class_list cl ON r.class_id = cl.id
-                                        LEFT JOIN subject_list sl ON r.subject_id = sl.id
-                                        LEFT JOIN student_list st ON r.student_id = st.id
-                                        LEFT JOIN academic_list a ON r.academic_id = a.id
-                                        WHERE r.academic_id = {$_SESSION['academic']['id']}
-                                        ORDER BY CONCAT(f.firstname, ' ', f.lastname) ASC");
+        <div id="evaluation-cards" class="row">
+            <?php 
+            $faculty = $conn->query("SELECT f.id, 
+                                            CONCAT(f.firstname, ' ', f.lastname) AS faculty_name, 
+                                            f.avatar,  -- Ensure you have an avatar column
+                                            r.academic_id, 
+                                            a.year AS academic_year, 
+                                            r.class_id, 
+                                            cl.curriculum, 
+                                            CONCAT(cl.level, ' - ', cl.section) AS class_details, 
+                                            r.subject_id, 
+                                            sl.subject,
+                                            CONCAT(st.firstname, ' ', st.lastname) AS student_name
+                                    FROM faculty_list f
+                                    LEFT JOIN evaluation_list r ON r.faculty_id = f.id
+                                    LEFT JOIN class_list cl ON r.class_id = cl.id
+                                    LEFT JOIN subject_list sl ON r.subject_id = sl.id
+                                    LEFT JOIN student_list st ON r.student_id = st.id
+                                    LEFT JOIN academic_list a ON r.academic_id = a.id
+                                    WHERE r.academic_id = {$_SESSION['academic']['id']}
+                                    ORDER BY CONCAT(f.firstname, ' ', f.lastname) ASC");
 
-                while ($row = $faculty->fetch_assoc()): 
-                ?>
-                <tr>
-                    <td><?php echo ucwords($row['faculty_name']); ?></td>
-                    <td><?php echo $row['academic_year'] . ' ' . ordinal_suffix($_SESSION['academic']['semester']) . ' Semester'; ?></td>
-                    <td data-subject-id="<?php echo $row['subject_id']; ?>"><?php echo $row['subject']; ?></td>
-                    <td><?php echo ucwords($row['student_name']); ?></td>
-                    <td data-class-id="<?php echo $row['class_id']; ?>">
-                        <?php echo $row['curriculum'] . ' (' . $row['class_details'] . ')'; ?>
-                    </td>
-                    <td>
-                        <a class="btn btn-sm btn-info view-report" data-id="<?php echo $row['id']; ?>" href="javascript:void(0)">
+            while ($row = $faculty->fetch_assoc()): 
+                $avatar = !empty($row['avatar']) ? 'assets/uploads/' . $row['avatar'] : 'assets/uploads/default_avatar.png';
+            ?>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="user-icon" style="flex-shrink: 0;">
+                        <img src="<?php echo $avatar; ?>" alt="Avatar" class="user-img border" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%;">
+                    </div>
+                    <div class="ml-3"> <!-- Added margin-left for spacing -->
+                        <h5 class="card-title font-weight-bold"><?php echo ucwords($row['faculty_name']); ?></h5>
+                        <p class="card-text">
+                            <strong>Academic Year:</strong> <?php echo $row['academic_year'] . ' ' . ordinal_suffix($_SESSION['academic']['semester']) . ' Semester'; ?><br>
+                            <strong>Subject:</strong> <?php echo $row['subject']; ?><br>
+                            <strong>Student Evaluated:</strong> <?php echo ucwords($row['student_name']); ?><br>
+                            <strong>Class:</strong> <?php echo $row['curriculum'] . ' (' . $row['class_details'] . ')'; ?>
+                        </p>
+                        <button class="btn btn-info view-report" data-id="<?php echo $row['id']; ?>" data-subject-id="<?php echo $row['subject_id']; ?>" data-class-id="<?php echo $row['class_id']; ?>">
                             <i class="fa fa-eye"></i> View Report
-                        </a>
-                    </td>
-                </tr>
-                <?php endwhile; ?>
-            </tbody>
-        </table>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+                    <?php endwhile; ?>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div id="pagination-controls" class="text-center mt-3">
+            <button id="prev-page" class="btn btn-secondary">Previous</button>
+            <button id="next-page" class="btn btn-secondary">Next</button>
+        </div>
     </div>
 </div>
 
@@ -96,7 +100,11 @@ function ordinal_suffix($num) {
         </div>
     </div>
 </div>
+
+<!-- Your existing styles and scripts follow... -->
+
 <style>
+    
     .bg-gradient-secondary {
         background: #B31B1C linear-gradient(182deg, #b31b1b, #dc3545) repeat-x !important;
         color: #fff;
@@ -133,132 +141,95 @@ function ordinal_suffix($num) {
         box-sizing: border-box; 
     }
 
-    /* Additional Styles for the Search Bar */
-    .input-group {
-        margin-bottom: 20px; /* Space between search bar and table */
+    .user-icon {
+    display: flex;
+    align-items: center;
+    margin-right: 15px; /* Space between the image and text */
+}
+
+.card-body {
+    display: flex; /* Make card body a flex container */
+    align-items: center; /* Center items vertically */
+}
+
+.font-weight-bold {
+    font-weight: bold; /* Make the name bold */
+}
+
+.card-text {
+    margin: 0; /* Remove default margin to ensure spacing looks good */
+}
+
+
+    .card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
-    table.table-bordered.dataTable tbody th, table.table-bordered.dataTable tbody td {
-    border-bottom-width: 0;
-    border: none;
-    color: #333;
-    font-weight: 500; /* Add slight boldness */
-}
-/* General table styles */
-table.table-bordered {
-    border-collapse: collapse;
-    width: 100%;
-    margin: 20px 0;
-    font-size: 0.95rem;
-    background-color: #fff;
-    color: #333;
-}
 
-table.table-bordered th, 
-table.table-bordered td {
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    text-align: left;
-    vertical-align: middle;
-}
+    .btn-info {
+        color: #fff;
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+    }
 
-/* Header style */
-thead th {
-    background: #dc143c; /* Red background for table headers */
-    color: #f3f3f3; /* Light text color for contrast */
-    font-weight: bold;
-    border-bottom: 2px solid #b31b1c;
-    text-transform: uppercase;
-}
-
-/* Styled table rows */
-tbody tr {
-    border-bottom: 1px solid #ddd; /* Light gray borders between rows */
-    transition: background-color 0.3s ease; /* Smooth hover transition */
-}
-
-tbody tr:nth-of-type(even) {
-    background-color: #f3f3f3; /* Light gray for alternate rows */
-}
-
-tbody tr:last-of-type {
-    border-bottom: 2px solid #009879; /* Add a distinctive bottom border */
-}
-
-/* Hover effect */
-tbody tr:hover {
-    background-color: #f1f1f1; /* Slightly darker gray on hover */
-}
-
-/* Search bar styling */
-.input-group {
-    margin-bottom: 20px;
-    max-width: 400px;
-}
-
-.input-group .form-control {
-    border-radius: 0;
-    box-shadow: none;
-}
-
-.input-group-text {
-    background-color: #b31b1b;
-    color: #fff;
-    border: none;
-    border-radius: 0;
-}
-
-/* Modal content style */
-.modal-content {
-    background: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Button styles */
-.btn-info {
-    color: #fff;
-    background-color: #17a2b8;
-    border-color: #17a2b8;
-}
-
-.btn-info:hover {
-    background-color: #138496;
-    border-color: #117a8b;
-}
-
-/* Adjust table header */
-.bg-gradient-secondary {
-    background: #B31B1C linear-gradient(182deg, #b31b1b, #dc3545);
-    color: #fff;
-}
-
-/* Card header */
-.card-header {
-    background-color: transparent;
-    border-bottom: none;
-    padding: .75rem 1.25rem;
-    position: relative;
-    border-top-left-radius: .25rem;
-    border-top-right-radius: .25rem;
-}
-
+    .btn-info:hover {
+        background-color: #138496;
+        border-color: #117a8b;
+    }
 </style>
-
 <script>
     $(document).ready(function() {
-        // Initialize DataTables
-        var table = $('#evaluation-table').DataTable();
+        const itemsPerPage = 6; // Number of items per page
+        let currentPage = 1;
+
+        // Function to show/hide cards based on pagination
+        function showPage(page) {
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+
+            // Hide all cards
+            $('.card').hide();
+
+            // Show only the cards for the current page
+            $('.card').slice(start, end).show();
+
+            // Update pagination buttons
+            $('#prev-page').toggle(page > 1);
+            $('#next-page').toggle($('.card:visible').length === itemsPerPage);
+        }
+
+        // Initial display
+        showPage(currentPage);
+
+        // Previous button event
+        $('#prev-page').click(function() {
+            if (currentPage > 1) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        });
+
+        // Next button event
+        $('#next-page').click(function() {
+            currentPage++;
+            showPage(currentPage);
+        });
 
         // Filter function for the search bar
         $('#search-input').on('keyup', function() {
-            table.search(this.value).draw(); // Use DataTables search functionality
+            const searchTerm = this.value.toLowerCase();
+            $('.card').each(function() {
+                const facultyName = $(this).find('.card-title').text().toLowerCase();
+                $(this).toggle(facultyName.includes(searchTerm));
+            });
+            currentPage = 1; // Reset to the first page on search
+            showPage(currentPage);
         });
 
+        // Handle View Report button click
         $('.view-report').click(function() {
             var faculty_id = $(this).data('id');
-            var subject_id = $(this).closest('tr').find('td[data-subject-id]').data('subject-id');
-            var class_id = $(this).closest('tr').find('td[data-class-id]').data('class-id');
+            var subject_id = $(this).data('subject-id');
+            var class_id = $(this).data('class-id');
 
             $.ajax({
                 url: 'ajax.php?action=view_report',
@@ -278,22 +249,21 @@ tbody tr:hover {
             });
         });
 
+        // Function to display the report in the modal
         function displayReport(data) {
             var reportHtml = `<h4>Total Students Evaluated: ${data.tse}</h4>`;
             reportHtml += `<table class="table table-bordered"><thead><tr><th>Question</th><th>Rating 1</th><th>Rating 2</th><th>Rating 3</th><th>Rating 4</th><th>Rating 5</th></tr></thead><tbody>`;
 
-            $.each(data.data, function(question, ratings) {
-                reportHtml += `<tr>`;
-                reportHtml += `<td>${question}</td>`;
-                for (var i = 1; i <= 5; i++) {
-                    reportHtml += `<td>${ratings[i] ? ratings[i].toFixed(2) + '%' : '0%'}</td>`;
+            for (const question in data.data) {
+                reportHtml += `<tr>
+                                    <td>${question}</td>`;
+                for (let rating = 1; rating <= 5; rating++) {
+                    reportHtml += `<td>${data.data[question][rating] ? data.data[question][rating].toFixed(2) : 0}</td>`;
                 }
                 reportHtml += `</tr>`;
-            });
+            }
 
-            reportHtml += `</tbody></table>`;
-
-            // Display the report in a modal
+            reportHtml += '</tbody></table>';
             $('#report-content').html(reportHtml);
             $('#report-modal').modal('show');
         }

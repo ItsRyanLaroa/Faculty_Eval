@@ -24,7 +24,7 @@ if (isset($_FILES['excel_file'])) {
             exit;
         }
 
-        // Prepare the insert query
+        // Prepare the insert query without specifying the primary key column
         $stmt = $conn->prepare("INSERT INTO student_list (school_id, firstname, lastname, class_id, email, password) VALUES (?, ?, ?, ?, ?, ?)");
 
         // Loop through each row of the spreadsheet
@@ -65,3 +65,4 @@ if (isset($_FILES['excel_file'])) {
     header('Location: ../index.php?page=students&error=file_missing');
     exit;
 }
+?>
