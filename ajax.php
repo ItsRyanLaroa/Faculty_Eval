@@ -16,6 +16,11 @@ if($action == 'save_staff_question'){
     if($save)
         echo $save;
 }
+if ($action == 'toggle_status') {
+    $status = $_POST['status'];
+    $toggle = $crud->toggle_status($status);
+    if ($toggle) echo $toggle;
+}
 if($action == 'login2'){
 	$login = $crud->login2();
 	if($login)

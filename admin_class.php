@@ -607,44 +607,6 @@ function login(){
 		}
 	}
 	// admin_class.php
-	function insert_restriction() {
-		extract($_POST);
-		$filtered = implode(",", array_filter($rid));
-		
-		// Delete existing records not in the filtered list
-		if (!empty($filtered)) {
-			$this->db->query("DELETE FROM restriction_list WHERE id NOT IN ($filtered) AND academic_id = $academic_id");
-		} else {
-			$this->db->query("DELETE FROM restriction_list WHERE academic_id = $academic_id");
-		}
-		
-		// Prepare to insert records
-		foreach ($rid as $k => $v) {
-			// Ensure that the values are properly escaped to prevent SQL injection
-			$faculty_id = intval($faculty_id[$k]);
-			$class_id = intval($class_id[$k]);
-			$subject_id = intval($subject_id[$k]);
-	
-			// Prepare the insert query
-			$data = [
-				'academic_id' => intval($academic_id),
-				'faculty_id' => $faculty_id,
-				'class_id' => $class_id,
-				'subject_id' => $subject_id
-			];
-	
-			// Construct the INSERT statement
-			$columns = implode(", ", array_keys($data));
-			$values = implode(", ", array_map(function ($value) {
-				return "'" . $value . "'";
-			}, $data));
-	
-			// Execute the insert query
-			$this->db->query("INSERT INTO restriction_list ($columns) VALUES ($values)");
-		}
-		
-		return 1;
-	}
 	
 	
 		function delete_student(){
@@ -733,7 +695,7 @@ function login(){
 			}
 		}
 	
-		// Check if a restriction with the same class_id and subject_id exists, excluding the current record if updating
+		
 		$check = $this->db->query("SELECT * FROM restriction_list WHERE class_id = '$class_id' AND subject_id = '$subject_id'" . (!empty($id) ? " AND id != {$id}" : ''))->num_rows;
 	
 		if ($check > 0) {
@@ -786,40 +748,56 @@ function login(){
 	
 	function save_evaluation() {
 		extract($_POST);
+		
+		// Check for duplicate evaluation based on class_id, subject_id, and faculty_id,
+		// allowing duplicates but excluding the current evaluation_id
+		$check = $this->db->query("SELECT * FROM evaluation_list WHERE class_id = '$class_id' AND subject_id = '$subject_id' AND faculty_id = '$faculty_id'")->num_rows;
+		
+		// No need to return duplicate check result, as duplicates are allowed
+	
+		// Fetch the next evaluation_id based on the maximum evaluation_id in the evaluation_list table
+		$result = $this->db->query("SELECT IFNULL(MAX(evaluation_id), 0) + 1 AS next_id FROM evaluation_list");
+		$next_id = $result->fetch_assoc()['next_id'];
 	
 		// Prepare data to insert into evaluation_list
-		$data = "student_id = {$_SESSION['login_id']}, ";
+		$data = "evaluation_id = $next_id, "; // Use the next evaluation_id
+		$data .= "student_id = {$_SESSION['login_id']}, ";
 		$data .= "academic_id = $academic_id, ";
 		$data .= "subject_id = $subject_id, ";
 		$data .= "class_id = $class_id, ";
 		$data .= "restriction_id = $restriction_id, ";
-		$data .= "faculty_id = $faculty_id";
+		$data .= "faculty_id = $faculty_id, ";
+		$data .= "status = 'pending'"; // Add status as 'pending'
 	
 		// Insert evaluation into evaluation_list
 		$save = $this->db->query("INSERT INTO evaluation_list SET $data");
-		
+	
 		// Check if save was successful
-		if($save){
-			$eid = $this->db->insert_id; // Get the inserted evaluation ID
+		if ($save) {
+			$eid = $next_id; // Use the next evaluation_id as the inserted evaluation ID
 	
 			// Insert answers into evaluation_answers table
-			foreach($qid as $k => $v){
-				$data = "evaluation_id = $eid, ";
-				$data .= "question_id = $v, ";
-				$data .= "rate = {$rate[$v]}";
+			foreach ($qid as $k => $v) {
+				$answer_data = "evaluation_id = $eid, ";
+				$answer_data .= "question_id = $v, ";
+				$answer_data .= "rate = {$rate[$v]}";
 	
-				$ins[] = $this->db->query("INSERT INTO evaluation_answers SET $data");
+				$ins[] = $this->db->query("INSERT INTO evaluation_answers SET $answer_data");
 			}
 	
 			// Check if answers were inserted successfully
-			if(isset($ins))
+			if (isset($ins)) {
 				return 1; // Success
-			else
+			} else {
 				return 0; // Failed to insert answers
+			}
 		} else {
 			return 0; // Failed to insert evaluation
 		}
 	}
+	
+	
+	
 	
 	function save_staff_evaluation(){
 		extract($_POST);
@@ -967,30 +945,56 @@ function login(){
 	function get_report(){
 		extract($_POST);
 		$data = array();
-		$get = $this->db->query("SELECT * FROM evaluation_answers where evaluation_id in (SELECT evaluation_id FROM evaluation_list where academic_id = {$_SESSION['academic']['id']} and faculty_id = $faculty_id and subject_id = $subject_id and class_id = $class_id ) ");
-		$answered = $this->db->query("SELECT * FROM evaluation_list where academic_id = {$_SESSION['academic']['id']} and faculty_id = $faculty_id and subject_id = $subject_id and class_id = $class_id");
-			$rate = array();
+	
+		// Modify the first query to include only evaluations with status 'active'
+		$get = $this->db->query("SELECT * FROM evaluation_answers 
+			WHERE evaluation_id IN 
+				(SELECT evaluation_id FROM evaluation_list 
+					WHERE academic_id = {$_SESSION['academic']['id']} 
+					AND faculty_id = $faculty_id 
+					AND subject_id = $subject_id 
+					AND class_id = $class_id 
+					AND status = 'active')");
+	
+		// Modify the second query to count only active evaluations
+		$answered = $this->db->query("SELECT * FROM evaluation_list 
+			WHERE academic_id = {$_SESSION['academic']['id']} 
+			AND faculty_id = $faculty_id 
+			AND subject_id = $subject_id 
+			AND class_id = $class_id 
+			AND status = 'active'");
+	
+		$rate = array();
 		while($row = $get->fetch_assoc()){
 			if(!isset($rate[$row['question_id']][$row['rate']]))
-			$rate[$row['question_id']][$row['rate']] = 0;
+				$rate[$row['question_id']][$row['rate']] = 0;
 			$rate[$row['question_id']][$row['rate']] += 1;
-
 		}
-		// $data[]= $row;
+	
 		$ta = $answered->num_rows;
 		$r = array();
 		foreach($rate as $qk => $qv){
 			foreach($qv as $rk => $rv){
-			$r[$qk][$rk] =($rate[$qk][$rk] / $ta) *100;
+				$r[$qk][$rk] = ($rate[$qk][$rk] / $ta) * 100;
+			}
 		}
-	}
-	$data['tse'] = $ta;
-	$data['data'] = $r;
+	
+		$data['tse'] = $ta;
+		$data['data'] = $r;
 		
 		return json_encode($data);
-
 	}
 	
+	
+	public function toggle_status($status) {
+		include 'db_connect.php';
+		$update = $conn->query("UPDATE evaluation_list SET status = '$status'");
+		if ($update) {
+			return json_encode(['status' => 'success']);
+		} else {
+			return json_encode(['status' => 'error', 'message' => $conn->error]);
+		}
+	}
 	
 	function get_staff_class(){
 		extract($_POST);

@@ -61,4 +61,33 @@ $astat = array("Not Yet Started","On-going","Closed");
       </div>
     </div>
   </div>
+  <div class="col-12 col-sm-6 col-md-4">
+    <div class="small-box bg-light shadow-sm border">
+      <div class="inner">
+        <!-- Get the total number of subjects for the logged-in user -->
+        <h3>
+        <?php 
+          // Assuming the user is identified by a session variable or similar
+          $faculty_id = $_SESSION['login_id']; // Adjust this according to your session setup
+          $total_subjects_query = "
+            SELECT COUNT(DISTINCT sl.id) AS total_subjects
+            FROM class_list cl
+            JOIN subject_list sl ON cl.subject_id = sl.id
+            WHERE cl.teacher_id = ?"; // Use the correct field that links to the user (faculty_id)
+          
+          $stmt = $conn->prepare($total_subjects_query);
+          $stmt->bind_param("i", $faculty_id);
+          $stmt->execute();
+          $result = $stmt->get_result();
+          $row = $result->fetch_assoc();
+          echo $row['total_subjects']; 
+        ?>
+        </h3>
+        <p>Total Subjects</p>
+      </div>
+      <div class="icon">
+        <i class="fa fa-book"></i> <!-- Icon for subjects -->
+      </div>
+    </div>
+  </div>
 </div>

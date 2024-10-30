@@ -104,7 +104,7 @@ $(document).ready(function(){
     
     // Handle the "Add New" button click
     $('.new_subject').click(function(){
-        uni_modal("Add New Subject", "<?php echo $_SESSION['login_view_folder']; ?>manage_subject.php?faculty_id=<?php echo $faculty_id; ?>&academic_id=<?php echo $academic_id; ?>");
+        uni_modal("", "<?php echo $_SESSION['login_view_folder']; ?>manage_subject.php?faculty_id=<?php echo $faculty_id; ?>&academic_id=<?php echo $academic_id; ?>");
     });
 
     $('.delete_class').click(function(){
