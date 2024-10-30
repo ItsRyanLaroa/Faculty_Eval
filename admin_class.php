@@ -719,9 +719,26 @@ function login(){
 		}
 		return 0; // Error occurred
 	}
-	
-	
-	
+// In admin_class.php
+function delete_subject_restriction() {
+    // Ensure 'id' is present in the POST data
+    if (!isset($_POST['id'])) {
+        return 0; // Error if id is not provided
+    }
+    $id = $_POST['id'];
+    
+    // Use prepared statements for secure deletion
+    $stmt = $this->db->prepare("DELETE FROM restriction_list WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    
+    // Execute and check if deletion was successful
+    if ($stmt->execute()) {
+        return 1; // Successfully deleted
+    } else {
+        return 0; // Error occurred
+    }
+}
+
 	
 	
 	function save_staff_restriction(){

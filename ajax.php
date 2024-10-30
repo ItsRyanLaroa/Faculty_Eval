@@ -152,9 +152,10 @@ if($action == 'save_restriction'){
 	if($save)
 		echo $save;
 }
-if ($action == 'insert_restriction') {
-    $save = $crud->insert_restriction();
-    echo $save;  
+if($action == 'delete_subject_restriction'){
+	$save = $crud->delete_subject_restriction();
+	if($save)
+		echo $save;
 }
 
 
