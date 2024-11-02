@@ -28,7 +28,12 @@ function ordinal_suffix($num){
     color: #fff;
 }
 .bg-gradient-success {
-    background: #1b1b1b linear-gradient(180deg, #1b1b1b, #1b1b1b) repeat-x !important;
+    background: #dc143c linear-gradient(180deg, #dc143c, #dc143c) repeat-x !important;
+    color: #fff;
+}
+
+.bg-gradient-success.btn:hover {
+    background: #007bff linear-gradient(180deg, #268fff, #007bff) repeat-x !important;
     color: #fff;
 }
 
@@ -36,7 +41,7 @@ function ordinal_suffix($num){
     background-color: transparent;
     border-bottom: none;
 }
-    .nav-bar {
+    /*.nav-bar {
         display: flex;
         justify-content: space-around;
         background: #f4f4f4;
@@ -55,6 +60,23 @@ function ordinal_suffix($num){
         font-weight: bold;
         border-bottom: 2px solid blue;
         font-family: tahoma;
+    } */
+
+	.nav-bar {
+			display: flex; 
+		}
+
+		.nav-link {
+			margin: 0 10px;
+			text-decoration: none;
+			color: black;
+		}
+
+		.nav-link.active {
+        font-weight: bold;
+        color: #dc143c;
+        border-bottom: 2px solid #007bff;
+        margin-bottom: 10px; 
     }
 
     .content-container {
@@ -62,6 +84,9 @@ function ordinal_suffix($num){
         padding: 20px;
     }
 
+	.card-info.card-outline{
+    	border-top: 3px solid #dc143c;
+	}
     .card button {
         padding: 10px 15px;
         background-color: #dc143c;
@@ -80,19 +105,22 @@ function ordinal_suffix($num){
     .card button:not(:disabled):hover {
         background-color: darkblue;
     }
+
     .bg-gradient-primary {
     background: #dc143c linear-gradient(180deg, #dc143c, #dc143c) repeat-x !important;
-    color: #fff;
-    
-}
-.bg-gradient-secondary {
-    background: #000000 linear-gradient(180deg, #000000, #6c757d) repeat-x !important;
-    color: #fff;
-}
+    color: #fff; 
+	}
+
+	.border-info{
+		border-color: #dc143c !important;
+	}
+
 </style>
-<div class="nav-bar"> <a href="./index.php?page=category" class="nav-link nav-category <?php echo (isset($_GET['page']) && $_GET['page'] == 'category') ? 'active' : ''; ?>">Category</a>
+
+<div class="nav-bar"> 
+    <a href="./index.php?page=category" class="nav-link nav-category <?php echo (isset($_GET['page']) && $_GET['page'] == 'category') ? 'active' : ''; ?>">Category</a>
     <a href="./index.php?page=semester" class="nav-link nav-semester <?php echo (isset($_GET['page']) && $_GET['page'] == 'semester') ? 'active' : ''; ?>">Semester</a>
-    <a href="./index.php?page=manage_questionnaire" class="nav-link nav-questionnaire <?php echo (isset($_GET['page']) && $_GET['page'] == 'manage_questionnaire') ? 'active' : ''; ?>">Questionnaire</a>
+    <a href="javascript:void(0)" class="nav-link nav-questionnaire disabled">Questionnaire</a>
 </div>
 <div class="container-fluid">
 	<div class="row">
@@ -134,7 +162,7 @@ function ordinal_suffix($num){
 		<div class="col-md-8">
 			<div class="card card-outline card-info">
 				<div class="card-header">
-					<b>Evaluation Questionnaire for Academic: <?php echo $year.' '.(ordinal_suffix($semester)) ?> </b>
+					<b>Evaluation Questionnaire for Academic: <span style="color: #dc143c; font-weight: bold;"><?php echo $year . ' (' . ordinal_suffix($semester) . ' Semester)'; ?></span></b>
 					<div class="card-tools">
 						<!-- <button class="btn btn-sm btn-flat btn-primary bg-gradient-primary mx-1" id="eval_restrict" type="button">Evaluation Restriction</button> -->
 						<button class="btn btn-sm btn-flat btn-success bg-gradient-success mx-1" form="order-question">Save Order</button>
@@ -142,8 +170,14 @@ function ordinal_suffix($num){
 				</div>
 				<div class="card-body">
 					<fieldset class="border border-info p-2 w-100">
-					   <legend  class="w-auto">Rating Legend</legend>
-					   <p>5 = Strongly Agree, 4 = Agree, 3 = Uncertain, 2 = Disagree, 1 = Strongly Disagree</p>
+						<h3><span style="font-weight: bold;">Rating Legend</h3></span>
+						<p>
+							<span style="color: #dc143c; font-weight: bold;">5</span> - Strongly Agree <span style="color: #007bff; font-weight: bold;"> | </span>
+							<span style="color: #dc143c; font-weight: bold;">4</span> - Agree <span style="color: #007bff; font-weight: bold;"> | </span>
+							<span style="color: #dc143c; font-weight: bold;">3</span> - Uncertain <span style="color: #007bff; font-weight: bold;"> | </span>
+							<span style="color: #dc143c; font-weight: bold;">2</span> - Disagree <span style="color: #007bff; font-weight: bold;"> | </span>
+							<span style="color: #dc143c; font-weight: bold;">1</span> - Strongly Disagree
+						</p>
 					</fieldset>
 					<form id="order-question">
 					<div class="clear-fix mt-2"></div>

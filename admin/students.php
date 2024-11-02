@@ -39,7 +39,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         <div class="card-header">
             <div class="card-tools">
                 <a class="btn btn-block btn-sm btn-default btn-flat border-primary new_class" href="javascript:void(0)" data-id="<?php echo $class_id; ?>">
-                    <i class="fa fa-plus"></i> Add New
+                    <i class="fa fa-plus"></i> <span style="color: #dc143c; font-weight: bold;">Add New</span>
                 </a>
             </div>
             <!-- Back Button -->
@@ -48,12 +48,12 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             </a>
             
             <div class="class-details mt-3">
-                <span class="class-name">Class: <?php echo $class_name; ?></span>
-                <span class="class-code" >Class ID: <?php echo $class_id; ?></span>
+                <span class="class-name" style="font-size: 24px;">Class: <?php echo $class_name; ?></span>
+                <span class="class-code" style="font-size: 24px;">| Class ID: <?php echo $class_id; ?></span>
             </div>
             <div class="teacher-details">
-                <span class="teacher-name">Teacher: <?php echo $teacher_name; ?></span>
-                <span class="subject-name"> | Subject: <?php echo $subject_name; ?></span>
+                <span class="teacher-name" style="font-size: 24px;">Teacher: <?php echo $teacher_name; ?></span>
+                <span class="subject-name" style="font-size: 24px;"> | Subject: <span style="color: #dc143c; font-weight: bold; font-size: 24px;"><?php echo $subject_name; ?></span>
             </div>
         </div>
         <div class="card-body">
@@ -148,6 +148,11 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         border-top: none;
     }
 
+    .card-tools i{
+        color: #dc143c;
+        font-weight: bold;
+    }
+
     .table-bordered {
         border: none;
     }
@@ -160,7 +165,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     }
 
     tbody tr:hover {
-        background-color: #f1f1f1;
+        background-color: #95d2ec;
     }
     .class-details {
         display: flex;

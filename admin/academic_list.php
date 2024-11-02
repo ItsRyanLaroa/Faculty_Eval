@@ -43,7 +43,7 @@ thead th {
 
 /* Button styles */
 .btn-primary {
-    color: blue;
+    color: #007bff;
     background-color: transparent;
     border: none;
 }
@@ -54,9 +54,14 @@ thead th {
     border: none;
 }
 
+.card-tools i{
+    color: #dc143c;
+    font-weight: bold;
+}
+
 /* Hover effect for rows */
 tbody tr:hover {
-    background-color: #f1f1f1;
+    background-color: #95d2ec;
 }
 
 </style>
@@ -66,7 +71,7 @@ tbody tr:hover {
 	<div class="card card-outline card-primary">
 		<div class="card-header">
 			<div class="card-tools">
-				<a class="btn btn-block btn-sm btn-default btn-flat border-primary new_academic" href="javascript:void(0)"><i class="fa fa-plus"></i> Add New</a>
+				<a class="btn btn-block btn-sm btn-default btn-flat border-primary new_academic" href="javascript:void(0)"><i class="fa fa-plus"></i> <span style="color: #dc143c; font-weight: bold;">Add New</span></a>
 			</div>
 		</div>
 		<div class="card-body">
@@ -103,7 +108,7 @@ tbody tr:hover {
 							<?php if($row['is_default'] == 0): ?>
 								<button type="button" class="btn btn-secondary bg-gradient-secondary col-sm-4 btn-flat btn-sm px-1 py-0 make_default" data-id="<?php echo $row['id'] ?>">No</button>
 							<?php else: ?>
-								<button type="button" class="btn btn-primary bg-gradient-primary col-sm-4 btn-flat btn-sm px-1 py-0">Yes</button>
+								<button type="button" class="btn btn-primary bg-gradient-primary col-sm-4 btn-flat btn-sm px-1 py-0"><span style="color: white; font-weight: bold;">Yes</span></button>
 							<?php endif; ?>
 						</td>
 						<td class="text-center">

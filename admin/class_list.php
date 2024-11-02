@@ -3,7 +3,7 @@
 	<div class="card card-outline card-primary">
 		<div class="card-header">
 			<div class="card-tools">
-				<a class="btn btn-block btn-sm btn-default btn-flat border-primary new_class" href="javascript:void(0)"><i class="fa fa-plus"></i> Add New</a>
+				<a class="btn btn-block btn-sm btn-default btn-flat border-primary new_class" href="javascript:void(0)"><i class="fa fa-plus"></i> <span style="color: #dc143c; font-weight: bold;">Add New</span></a>
 			</div>
 		</div>
 		<div class="card-body">
@@ -37,7 +37,7 @@
 								<button type="button" class="btn btn-danger btn-flat delete_class" data-id="<?php echo $row['id'] ?>">
 									<i class="fas fa-trash"></i>
 								</button>
-								<a class="dropdown-item class_student manage-students-btn" href="index.php?page=students&id=<?php echo $row['id'] ?>">view</a>
+								<a class="dropdown-item class_student manage-students-btn" href="index.php?page=students&id=<?php echo $row['id'] ?>"><i class="fa fa-eye"></i></a>
 							</div>
 						</td>
 					</tr>	
@@ -103,9 +103,28 @@ thead th {
 	background-color: transparent;
     border: none;
 }
+
+.card-tools i{
+    color: #dc143c;
+    font-weight: bold;
+}
+
+
+
+.dropdown-item:hover{
+	text-decoration: none;
+	background-color: #007bff;
+	color: white;
+}
+
+
 /* Hover effect for rows */
 tbody tr:hover {
-    background-color: #f1f1f1;
+    background-color: #95d2ec;
+}
+
+.btn-primary{
+    color: #007bff;
 }
 
 </style>

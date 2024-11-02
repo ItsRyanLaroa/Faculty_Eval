@@ -1,9 +1,19 @@
 <?php include'db_connect.php' ?>
+<style>
+	.card-success.card-outline{
+		border-top: 3px solid #dc143c;;
+	}
+
+	.card-tools i{
+		color: #dc143c;
+		font-weight: bold;
+	}
+</style>
 <div class="col-lg-12">
 	<div class="card card-outline card-success">
 		<div class="card-header">
 			<div class="card-tools">
-				<a class="btn btn-block btn-sm btn-default btn-flat border-primary" href="./index.php?page=new_user"><i class="fa fa-plus"></i> Add New User</a>
+				<a class="btn btn-block btn-sm btn-default btn-flat border-primary" href="./index.php?page=new_user"><i class="fa fa-plus"></i> <span style="color: #dc143c; font-weight: bold;">Add New User</span></a>
 			</div>
 		</div>
 		<div class="card-body">

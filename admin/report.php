@@ -107,6 +107,13 @@ function ordinal_suffix($num) {
 </div>
 
 <style>
+<<<<<<< HEAD
+    .card-body{
+        flex-direction: column;
+        gap: 20px;
+    }
+=======
+>>>>>>> 0f208196f250c4f02b9e494509a34cb36d230aab
     .bg-gradient-secondary {
         background: #B31B1C linear-gradient(182deg, #b31b1b, #dc3545) repeat-x !important;
         color: #fff;
@@ -114,11 +121,64 @@ function ordinal_suffix($num) {
     .user-icon {
         display: flex;
         align-items: center;
+<<<<<<< HEAD
+        margin: 15px 0 15px 0; /* Space between the image and text */
+    }
+
+    .card-body {
+        display: flex; /* Make card body a flex container */
+        align-items: center; /* Center items vertically */
+    }
+
+    .font-weight-bold {
+        font-weight: bold; /* Make the name bold */
+    }
+
+    .card-text {
+        margin: 0;
+        font-size: 22px; /* Remove default margin to ensure spacing looks good */
+    }
+
+
+    .card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-info {
+        margin-top: 15px;
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+        justify-self: center;
+    }
+
+    .btn-info:hover {
+        background-color: black;
+        border-color: black;
+    }
+
+    .callout.callout-info{
+        border-left-color: #dc143c;
+    }
+
+    .card{
+        background-color: #dc143c;
+    }
+
+    .ml-3{
+        color: white;
+    }
+
+    .ml-3 h5{
+        font-size: 24px;
+    }
+=======
         margin-right: 15px;
     }
     .card:hover {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
+>>>>>>> 0f208196f250c4f02b9e494509a34cb36d230aab
 </style>
 
 <script>

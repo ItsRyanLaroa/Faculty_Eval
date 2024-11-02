@@ -76,7 +76,7 @@
 
     /* Button styling */
     #manageQuestionnaireButton {
-        background-color: #007bff;
+        background-color: #dc143c;
         color: #ffffff;
         border: none;
         padding: 12px 20px;
@@ -104,7 +104,7 @@
     background-color: transparent;
     border-bottom: none;
 }
-    .nav-bar {
+    /*.nav-bar {
         display: flex;
         justify-content: space-around;
         background: #f4f4f4;
@@ -123,6 +123,22 @@
         font-weight: bold;
         border-bottom: 2px solid blue;
         font-family: tahoma;
+    } */
+    .nav-bar {
+        display: flex; 
+    }
+
+    .nav-link {
+        margin: 0 10px;
+        text-decoration: none;
+        color: black;
+    }
+
+    .nav-link.active {
+        font-weight: bold;
+        color: #dc143c;
+        border-bottom: 2px solid #007bff;
+        margin-bottom: 10px; 
     }
 
     .content-container {

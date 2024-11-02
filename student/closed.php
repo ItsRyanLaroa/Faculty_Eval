@@ -11,4 +11,10 @@
 	#uni_modal .modal-footer.display{
 		display: flex
 	}
+
+	.container-fluid p{
+		color: #dc143c;
+		font-weight: bold;
+	}
+
 </style>

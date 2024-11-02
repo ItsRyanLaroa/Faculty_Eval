@@ -3,7 +3,7 @@
 	<div class="card card-outline card-success">
 		<div class="card-header">
 			<div class="card-tools">
-				<a class="btn btn-block btn-sm btn-default btn-flat border-primary" href="./index.php?page=new_student"><i class="fa fa-plus"></i> Add New Student</a>
+				<a class="btn btn-block btn-sm btn-default btn-flat border-primary" href="./index.php?page=new_student"><i class="fa fa-plus"></i> <span style="color: #dc143c; font-weight: bold;">Add New Student</span></a>
 			</div>
 		</div>
 		<div class="card-body">
@@ -14,7 +14,7 @@
 						<th>School ID</th>
 						<th>Name</th>
 						<th>Email</th>
-						<th>Department/section</th>
+						<th>Year & Section</th>
 						<th>Status</th>
 						<th>Action</th>
 					</tr>
@@ -91,6 +91,10 @@ thead th {
 .card-success.card-outline {
     border-top: none;
 }
+.card-tools i{
+    color: #dc143c;
+    font-weight: bold;
+}
 /* Card header styling */
 .card-header {
     background-color: transparent;
@@ -116,7 +120,7 @@ thead th {
 
 /* Hover effect for rows */
 tbody tr:hover {
-    background-color: #f1f1f1;
+    background-color: #95d2ec;
 }
 
 </style>

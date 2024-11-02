@@ -8,7 +8,6 @@
   
     .main-header {
       background-color: black;
-   
     }
   
   </style>

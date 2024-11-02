@@ -43,7 +43,12 @@ while ($row = $classes_and_subjects->fetch_assoc()) {
     $s_arr[$row['subject_id']] = $row['subject_name'];
 }
 ?>
-
+<style>
+    .card-tools i{
+    color: #dc143c;
+    font-weight: bold;
+}
+</style>
 <div class="container-fluid">
     <div class="col-lg-12">
         <div class="card-header">

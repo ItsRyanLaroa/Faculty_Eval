@@ -5,14 +5,23 @@
     border-bottom: none;
 }
     .nav-bar {
-        display: flex;
-        justify-content: space-around;
-        background: #f4f4f4;
-        padding: 10px 0;
-        
+        display: flex; 
     }
 
-    .nav-bar a {
+    .nav-link {
+        margin: 0 10px;
+        text-decoration: none;
+        color: black;
+    }
+
+    .nav-link.active {
+        font-weight: bold;
+        color: #dc143c;
+        border-bottom: 2px solid #007bff;
+        margin-bottom: 10px; 
+    }
+
+    /* .nav-bar a {
         text-decoration: none;
         padding: 10px 15px;
         color: #333;
@@ -23,7 +32,7 @@
         font-weight: bold;
         border-bottom: 2px solid blue;
         font-family: tahoma;
-    }
+    } */
 
     .content-container {
         margin-top: 20px;
@@ -56,6 +65,18 @@
 .bg-gradient-secondary {
     background: #000000 linear-gradient(180deg, #000000, #6c757d) repeat-x !important;
     color: #fff;
+}
+
+.card-info.card-outline{
+    border-top: 3px solid #dc143c;
+}
+
+.callout.callout-info{
+    border-left-color: #dc143c;
+}
+
+.card-primary.card-outline{
+    border-top: 3px solid #dc143c;
 }
 </style>
 
@@ -120,7 +141,7 @@
                                                 <a class="dropdown-item delete_criteria" href="javascript:void(0)" data-id="<?php echo $row['id'] ?>">Delete</a>
                                             </div>
                                         </span>
-                                        <i class="fa fa-bars"></i> <?php echo ucwords($row['criteria']) ?>
+                                        <i class="fa fa-bars"></i><span style="font-weight: bold;"> <?php echo ucwords($row['criteria']) ?></span>
                                         <input type="hidden" name="criteria_id[]" value="<?php echo $row['id'] ?>">
                                     </li>
                                     <?php endwhile; ?>

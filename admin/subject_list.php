@@ -53,10 +53,20 @@ thead th {
     border: none;
 }
 
+.card-tools i{
+    color: #dc143c;
+    font-weight: bold;
+}
+
 /* Hover effect for rows */
 tbody tr:hover {
-    background-color: #f1f1f1;
+    background-color: #95d2ec;
 }
+
+.btn-primary{
+    color: #007bff;
+}
+
 
 </style>
 
@@ -67,7 +77,7 @@ tbody tr:hover {
         <div class="card-header">
             <div class="card-tools">
                 <a class="btn btn-block btn-sm btn-default btn-flat border-primary new_subject" href="javascript:void(0)">
-                    <i class="fa fa-plus"></i> Add New
+                    <i class="fa fa-plus"></i> <span style="color: #dc143c; font-weight: bold;">Add New</span>
                 </a>
             </div>
         </div>

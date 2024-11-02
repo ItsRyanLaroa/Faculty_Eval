@@ -7,10 +7,10 @@
     }
     .sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active, 
     .sidebar-light-primary .nav-sidebar>.nav-item>.nav-link.active {
-      background-color: #d3d3d3 ;
+      background-color: #95d2ec ;
       color: #000;
+      font-weight: bold;
     }
-   
     .sidebar-collapse .brand {
       width: 25px;
       height: auto;
@@ -41,6 +41,7 @@
       color: #fff;
       background-color: #dc143c;
     }
+
 </style>
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <div class="dropdown">
@@ -98,4 +99,5 @@
             }
         }
     });
+
 </script>

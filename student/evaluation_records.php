@@ -16,7 +16,7 @@ function ordinal_suffix($num) {
 
 <div class="col-lg-12">
     <div class="callout callout-info">
-        <h3 class="text-center">List of teachers you've evaluated</h3>
+        <span style="color: #dc143c"><h3 class="text-center" style="font-weight: bold;">List of teachers you've evaluated</h3></span>
 
         <!-- Search Bar -->
         <div class="input-group mb-3" style="max-width: 20%; margin-left: auto;">
@@ -111,12 +111,13 @@ function ordinal_suffix($num) {
         transition: background-color 0.3s ease;
     }
     #pagination-controls button.active {
-        background-color: #0056b3;
+        background-color: #007bff;
     }
     #pagination-controls button:disabled {
         background-color: #d6d6d6;
         cursor: not-allowed;
     }
+
     .card {
         border: 1px solid #ddd;
         border-radius: 5px;
@@ -127,6 +128,24 @@ function ordinal_suffix($num) {
     .card:hover {
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
+
+    .callout.callout-info{
+        border-left-color: #dc143c !important;
+    }
+
+    .card-body{
+        background-color: #dc143c !important;
+    }
+
+    .ml-3{
+        color: white;
+    }
+
+    .card-body{
+        display: flex;
+        align-items: center;
+    }
+
 </style>
 
 <script>

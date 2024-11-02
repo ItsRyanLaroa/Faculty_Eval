@@ -14,8 +14,9 @@
     }
     .sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active, 
     .sidebar-light-primary .nav-sidebar>.nav-item>.nav-link.active {
-      background-color: #d3d3d3 ;
+      background-color: #95d2ec;
       color: #000;
+      font-weight: bold;
     }
     .sidebar {
       padding: 45px 8px;
@@ -42,7 +43,7 @@
       height: auto;
     }
 
-
+    
     
   </style>
   <link rel="stylesheet" href="path/to/font-awesome/css/all.min.css">
@@ -92,7 +93,7 @@
           <li class="nav-item dropdown">
             <a href="./index.php?page=category" class="nav-link nav-criteria_list">
               <i class="nav-icon fas fa-tasks"></i>
-              <p>Category&Questionnaire</p>
+              <p>Category</p>
             </a>
           </li> 
           <!-- <li class="nav-item dropdown">

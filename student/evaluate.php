@@ -33,9 +33,29 @@ $restriction = $conn->query("SELECT r.id, s.id as sid, f.id as fid, concat(f.fir
     .list-group-item.active {
         z-index: 2;
         color: #fff;
-        background-color: #b31b1b;
+        background-color: #dc143c;
         border-color: black;
     }
+
+    .list-group-item.active{
+      border: #dc143c !important;
+    }
+
+    .card-info.card-outline{
+        border-top: 3px solid #dc143c !important;
+    }
+
+    .border-info{
+        border-color: #dc143c !important;
+        margin-bottom: 20px;
+        margin-top: 20px;
+     }
+
+     .bg-gradient-secondary {
+		background: #007bff !important;
+		color: #fff;
+	}
+
 </style>
 
 <div class="col-lg-12">

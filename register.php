@@ -87,106 +87,82 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration</title>
+    <title>Registration | Faculty Evaluation System</title>
     <link rel="stylesheet" href="Css/reg.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
-    <style>
-        .invalid-input {
-            border: 1px solid red;
-        }
-        .error-message {
-            color: red;
-            font-size: 0.8em;
-        }
-        .title {
-            background-color: rgba(189, 169, 169, 0.5);
-            padding: 10px;
-            overflow: hidden;
-            color: yellow;
-            border-radius: 40px 0px 40px 0;
-        }
-        .title a {
-            color: yellow;
-        }
-        body {
-            background: #e3f2fd;
-        }
-        button {
-            font-size: 18px;
-            font-weight: 400;
-            color: #fff;
-            padding: 14px 22px;
-            border: none;
-            background: #4070f4;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #265df2;
-        }
-        .regContainer {
-            display: flex;
-            width: 750px;
-            padding: 25px 30px;
-            margin: auto;
-            color: black;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .input-field {
-            margin-bottom: 20px;
-        }
-    </style>
 </head>
 <body>
-    <main>
-        <div class="regContainer">
-            <form action="register.php" method="post" enctype="multipart/form-data" class="form">
-                <h2 style="color: red;">Registration</h2>
-                <div class="user-details">
-                    <div class="input-field">
-                        <span class="details">First Name</span>
-                        <input type="text" name="firstname" placeholder="Enter your first name" value="<?php echo htmlspecialchars($firstname); ?>" />
+        <div class="container">
+            <div class="regContainer">
+                <div class="register-box">
+                    <div class="login-side">
+                        <div class="login-container">
+                            <div class="login-text">
+                                <h1>One of Us?</h1>
+                                <p>If you already have an account, just sign in.</p>
+                            </div>
+                            <div class="row-button">
+                            <a href="login.php" class="logBtn">Sign In</a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="input-field">
-                        <span class="details">Last Name</span>
-                        <input type="text" name="lastname" placeholder="Enter your last name" value="<?php echo htmlspecialchars($lastname); ?>" />
-                    </div>
-                    <div class="input-field">
-                        <span class="details">School Id</span>
-                        <input type="text" name="identifier" placeholder="School ID" value="<?php echo htmlspecialchars($identifier); ?>" class="<?php echo !empty($id_error) ? 'invalid-input' : ''; ?>" />
-                        <div class="error-message"><?php echo $id_error; ?></div>
-                    </div>
-                    <div class="input-field">
-                        <span class="details">Email</span>
-                        <input type="email" name="email" placeholder="Enter your email" value="<?php echo htmlspecialchars($email); ?>" class="<?php echo !empty($email_error) ? 'invalid-input' : ''; ?>" />
-                        <div class="error-message"><?php echo $email_error; ?></div>
-                    </div>
-                    <div class="input-field">
-                        <span class="details">Password</span>
-                        <input type="password" name="password" placeholder="Enter your password" class="<?php echo !empty($password_error) ? 'invalid-input' : ''; ?>" />
-                        <div class="error-message"><?php echo $password_error; ?></div>
-                    </div>
-                    <div class="input-field">
-                        <span class="details">Confirm Password</span>
-                        <input type="password" name="confirm_password" placeholder="Confirm your password" class="<?php echo !empty($confirm_password_error) ? 'invalid-input' : ''; ?>" />
-                        <div class="error-message"><?php echo $confirm_password_error; ?></div>
-                    </div>
-                    <div class="input-field">
-                        <span class="details">Avatar</span>
-                        <input type="file" name="avatar" accept="image/*" class="<?php echo !empty($avatar_error) ? 'invalid-input' : ''; ?>" />
-                        <div class="error-message"><?php echo $avatar_error; ?></div>
+                    <div class="register-side">
+                        <div class="register-logo">
+                            <img src="images/feslogo.png" alt="Logo">
+                            <div class="logo-name">
+                                <h3>Faculty Evaluation System</h3>                           
+                            </div>
+                        </div>
+
+                        <div class="account-register">
+                            <h1>Create Your Account</h1>
+                        </div>
+                        <form action="register.php" method="post" enctype="multipart/form-data" class="form">
+                            <div class="user-details">
+                                <div class="input-field">
+                                    
+                                    <input type="text" name="firstname" placeholder="First name" value="<?php echo htmlspecialchars($firstname); ?>" />
+                                </div>
+                                <div class="input-field">
+                                    
+                                    <input type="text" name="lastname" placeholder="Last name" value="<?php echo htmlspecialchars($lastname); ?>" />
+                                </div>
+                                <div class="input-field">
+                                    
+                                    <input type="text" name="identifier" placeholder="School ID" value="<?php echo htmlspecialchars($identifier); ?>" class="<?php echo !empty($id_error) ? 'invalid-input' : ''; ?>" />
+                                    <div class="error-message"><?php echo $id_error; ?></div>
+                                </div>
+                                <div class="input-field">
+                                    
+                                    <input type="email" name="email" placeholder="Email" value="<?php echo htmlspecialchars($email); ?>" class="<?php echo !empty($email_error) ? 'invalid-input' : ''; ?>" />
+                                    <div class="error-message"><?php echo $email_error; ?></div>
+                                </div>
+                                <div class="input-field">
+                                    
+                                    <input type="password" name="password" placeholder="Password" class="<?php echo !empty($password_error) ? 'invalid-input' : ''; ?>" />
+                                    <div class="error-message"><?php echo $password_error; ?></div>
+                                </div>
+                                <div class="input-field">
+                                    
+                                    <input type="password" name="confirm_password" placeholder="Confirm password" class="<?php echo !empty($confirm_password_error) ? 'invalid-input' : ''; ?>" />
+                                    <div class="error-message"><?php echo $confirm_password_error; ?></div>
+                                </div>
+                                <div class="input-avatar">
+                                    <label for="avatar" class="file-label">Avatar</label>
+                                    <input type="file" name="avatar" accept="image/*" placeholder ="Avatar" class="<?php echo !empty($avatar_error) ? 'invalid-input' : ''; ?>" />
+                                    <div class="error-message"><?php echo $avatar_error; ?></div>
+                                </div>
+                            </div>
+                            <div class="button">
+                                <input type="submit" value="Sign Up" />
+                            </div>
+                            <p style="text-align:center; padding-bottom: 10px;"><a href="homepage.php">Go back to site</a></p>
+                        </form>
                     </div>
                 </div>
-                <div class="button">
-                    <input type="submit" value="Register" />
-                </div>
-                <p style="text-align:center;"><a href="login.php">Already have an account? Login here!</a></p>
-            </form>
+            </div>
         </div>
-    </main>
-
+        
 </body>
-
 </html>
+

@@ -7,8 +7,9 @@
     }
     .sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active, 
     .sidebar-light-primary .nav-sidebar>.nav-item>.nav-link.active {
-      background-color: #d3d3d3 ;
+      background-color: #95d2ec;
       color: #000;
+      font-weight: bold;
     }
    
     .sidebar-collapse .brand {
@@ -65,7 +66,7 @@
         <!-- New Nav Item for Evaluation Records -->
         <li class="nav-item dropdown">
           <a href="./index.php?page=evaluation_records" class="nav-link nav-evaluation-records">
-            <i class="nav-icon fas fa-book"></i>
+            <i class="nav-icon fas fa-file-alt"></i>
             <p>Evaluation Records</p>
           </a>
         </li>

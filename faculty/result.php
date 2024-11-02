@@ -33,23 +33,27 @@ function ordinal_suffix($num){
 		<div class="col-md-9">
 			<div class="callout callout-info" id="printable">
 			<div>
-			<h3 class="text-center">Evaluation Report</h3>
+			<span style="color: #dc143c;"><h3 class="text-center" style="font-weight: bold;">Evaluation Report</h3></span>
 			<hr>
 			<table width="100%">
 					<tr>
-						<td width="50%"><p><b>Academic Year: <span id="ay"><?php echo $_SESSION['academic']['year'].' '.(ordinal_suffix($_SESSION['academic']['semester'])) ?> Semester</span></b></p></td>
+						<td width="50%"><p><b>Academic Year: <span id="ay"><?php echo '<span style="color: #dc143c;">'.$_SESSION['academic']['year'].'</span> ('.'<span style="color: #dc143c;">'.(ordinal_suffix($_SESSION['academic']['semester'])).' Semester</span>)'; ?></span></b></p></td>
 						<td></td>
 					</tr>
 					<tr>
-						<td width="50%"><p><b>Class: <span id="classField"></span></b></p></td>
-						<td width="50%"><p><b>Subject: <span id="subjectField"></span></b></p></td>
+						<td width="50%"><p><b>Class: <span id="classField" style="color: #dc143c;"></span></b></p></td>
+						<td width="50%"><p><b>Subject: <span id="subjectField" style="color: #dc143c;"></span></b></p></td>
 					</tr>
 			</table>
-				<p class=""><b>Total Student Evaluated: <span id="tse"></span></b></p>
+				<p class=""><b>Total Student Evaluated: <span id="tse" style="color: #dc143c;"></span></b></p>
 			</div>
 				<fieldset class="border border-info p-2 w-100">
-				   <legend  class="w-auto">Rating Legend</legend>
-				   <p>5 = Strongly Agree, 4 = Agree, 3 = Uncertain, 2 = Disagree, 1 = Strongly Disagree</p>
+				   <span style="font-weight: bold;"><legend  class="w-auto">Rating Legend</legend></span>
+				   			<span style="color: #dc143c; font-weight: bold;">5</span> - Strongly Agree <span style="color: #007bff; font-weight: bold;"> | </span>
+							<span style="color: #dc143c; font-weight: bold;">4</span> - Agree <span style="color: #007bff; font-weight: bold;"> | </span>
+							<span style="color: #dc143c; font-weight: bold;">3</span> - Uncertain <span style="color: #007bff; font-weight: bold;"> | </span>
+							<span style="color: #dc143c; font-weight: bold;">2</span> - Disagree <span style="color: #007bff; font-weight: bold;"> | </span>
+							<span style="color: #dc143c; font-weight: bold;">1</span> - Strongly Disagree
 				</fieldset>
 				<?php 
 							$q_arr = array();
@@ -59,7 +63,7 @@ function ordinal_suffix($num){
 					<table class="table table-condensed wborder">
 						<thead>
 							<tr class="bg-gradient-secondary">
-								<th class=" p-1"><b><?php echo $crow['criteria'] ?></b></th>
+								<th class="p-1"><b><?php echo $crow['criteria'] ?></b></th>
 								<th width="5%" class="text-center">1</th>
 								<th width="5%" class="text-center">2</th>
 								<th width="5%" class="text-center">3</th>
@@ -96,6 +100,38 @@ function ordinal_suffix($num){
 	.list-group-item:hover{
 		color: black !important;
 		font-weight: 700 !important;
+	}
+
+	.list-group-item.active{
+		border: #dc143c;
+	}
+
+	.callout.callout-info{
+    border-left-color: #dc143c;
+  }
+
+  .btn{
+	background: #dc143c !important;
+	border: #dc143c;
+  }
+
+  .btn:hover{
+	background-color: #007bff !important;
+  }
+
+  .border-info{
+	border-color: #dc143c !important;
+	margin-bottom: 20px;
+	margin-top: 20px;
+  }
+
+  .bg-gradient-secondary {
+		background: #007bff !important;
+		color: #fff;
+	}
+
+	.p-1{
+		justify-content: center;
 	}
 </style>
 <noscript>

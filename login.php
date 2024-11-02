@@ -54,11 +54,9 @@ if (isset($_SESSION['login_id'])) {
                   <input type="password" class="form-control" name="password" required placeholder="Password">
                 </div>
 
-                <div class="row">
                   <div class="button">
                     <button type="submit" class="btn">Sign In</button>
                   </div>
-                </div>
 
                 <p style="text-align: center;">
                   <a href="homepage.php">Go back to site</a>

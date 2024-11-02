@@ -17,6 +17,11 @@
 
 	include 'header.php' 
 ?>
+<style>
+  .border-primary{
+    border-color: #dc143c !important; 
+  }
+</style>
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
 <div class="wrapper">
   <?php include 'topbar.php' ?>
@@ -124,7 +129,7 @@
   <footer class="main-footer">
    
     <div class="float-right d-none d-sm-inline-block">
-      <b><?php echo $_SESSION['system']['name'] ?></b>
+    <span style="color: black;"><b><?php echo $_SESSION['system']['name'] ?></b></span>
     </div>
   </footer>
 </div>
