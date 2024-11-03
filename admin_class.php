@@ -312,42 +312,41 @@ function login(){
 	function save_class(){
 		extract($_POST);
 		$data = "";
-		
+	
 		// Build the SQL data string, excluding certain keys and non-numeric values
 		foreach($_POST as $k => $v){
 			if(!in_array($k, array('id', 'user_ids', 'teacher_id', 'subject_id', 'class_code')) && !is_numeric($k)){
-				if(empty($data)){
-					$data .= " $k='$v' ";
-				} else {
-					$data .= ", $k='$v' ";
-				}
+				$data .= empty($data) ? " $k='$v' " : ", $k='$v' ";
 			}
 		}
 	
-		// Add teacher_id and subject_id to the data string
-		if(isset($teacher_id)){
-			$data .= ", teacher_id='$teacher_id' ";
+		// Handle multiple teacher and subject IDs by converting them to comma-separated strings
+		if(isset($teacher_id) && is_array($teacher_id)){
+			$teacher_ids = implode(',', $teacher_id); // Convert array to comma-separated string
+			$data .= ", teacher_id='$teacher_ids' ";
 		}
-		
-		if(isset($subject_id)){
-			$data .= ", subject_id='$subject_id' ";
+	
+		if(isset($subject_id) && is_array($subject_id)){
+			$subject_ids = implode(',', $subject_id); // Convert array to comma-separated string
+			$data .= ", subject_id='$subject_ids' ";
 		}
 	
 		// Generate a random class code for student enrollment if adding a new class
 		if(empty($id)){
-			$class_code = substr(md5(uniqid(mt_rand(), true)), 0, 8);  // Generate an 8-character code
+			$class_code = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 8);
 			$data .= ", class_code='$class_code' ";
 		}
 	
 		// Check if class already exists, excluding the current record if updating
-		$chk = $this->db->query("SELECT * FROM class_list WHERE (".str_replace(",", ' AND ', $data).") AND id != '{$id}'")->num_rows;
-		if($chk > 0){
+		$existing_class_check = $this->db->query("SELECT * FROM class_list WHERE (".str_replace(",", ' AND ', $data).") AND id != '{$id}'")->num_rows;
+		if($existing_class_check > 0){
 			return 2; // Class already exists
 		}
 	
-		// If there are user IDs (optional)
-		if(isset($user_ids)){
-			$data .= ", user_ids='".implode(',', $user_ids)."' ";
+		// If there are user IDs, convert to comma-separated string
+		if(isset($user_ids) && is_array($user_ids)){
+			$user_ids_str = implode(',', $user_ids);
+			$data .= ", user_ids='$user_ids_str' ";
 		}
 	
 		// Insert new class if no ID is provided, otherwise update existing class
@@ -363,6 +362,8 @@ function login(){
 		}
 		return 0; // Error saving data
 	}
+	
+	
 	
 	function delete_class(){
 		extract($_POST);
@@ -695,11 +696,11 @@ function login(){
 			}
 		}
 	
-		
-		$check = $this->db->query("SELECT * FROM restriction_list WHERE class_id = '$class_id' AND subject_id = '$subject_id'" . (!empty($id) ? " AND id != {$id}" : ''))->num_rows;
+		// Check for duplicates for the same faculty ID
+		$check = $this->db->query("SELECT * FROM restriction_list WHERE class_id = '$class_id' AND subject_id = '$subject_id' AND faculty_id = '{$faculty_id}'" . (!empty($id) ? " AND id != {$id}" : ''))->num_rows;
 	
 		if ($check > 0) {
-			return 2; // Duplicate class_id and subject_id combination found
+			return 3; // Duplicate class_id and subject_id combination found for the same faculty ID
 		}
 	
 		if (empty($id)) {
@@ -719,6 +720,7 @@ function login(){
 		}
 		return 0; // Error occurred
 	}
+	
 // In admin_class.php
 function delete_subject_restriction() {
     // Ensure 'id' is present in the POST data

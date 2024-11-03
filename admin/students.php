@@ -4,13 +4,11 @@
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id = intval($_GET['id']); // Convert to integer for safety
 
-    // Modify the query to also fetch the class_id, teacher's name, and subject code (which is the subject name)
-    $class_qry = $conn->prepare("SELECT c.id as class_id, concat(c.curriculum, ' ', c.level, '-', c.section) as class, 
-                                        t.firstname as teacher_firstname, t.lastname as teacher_lastname, 
-                                        s.code as subject_name 
+    // Modify the query to retrieve all teachers and subjects associated with the class
+    $class_qry = $conn->prepare("SELECT c.id as class_id, 
+                                        concat(c.curriculum, ' ', c.level, '-', c.section) as class,
+                                        c.teacher_id, c.subject_id
                                  FROM class_list c
-                                 JOIN faculty_list t ON c.teacher_id = t.id 
-                                 JOIN subject_list s ON c.subject_id = s.id
                                  WHERE c.id = ?");
     $class_qry->bind_param("i", $id); // Bind the $id parameter
     $class_qry->execute();
@@ -20,13 +18,39 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         $class_data = $result->fetch_assoc();
         $class_name = $class_data['class'];
         $class_id = $class_data['class_id'];
-        $teacher_name = $class_data['teacher_firstname'] . ' ' . $class_data['teacher_lastname'];
-        $subject_name = $class_data['subject_name'];
+        
+        // Fetch teachers
+        $teacher_ids = explode(',', $class_data['teacher_id']);
+        $teachers = [];
+        if (!empty($teacher_ids)) {
+            $teacher_id_placeholders = implode(',', array_fill(0, count($teacher_ids), '?'));
+            $teacher_qry = $conn->prepare("SELECT firstname, lastname FROM faculty_list WHERE id IN ($teacher_id_placeholders)");
+            $teacher_qry->bind_param(str_repeat('i', count($teacher_ids)), ...$teacher_ids);
+            $teacher_qry->execute();
+            $teacher_result = $teacher_qry->get_result();
+            while ($teacher_row = $teacher_result->fetch_assoc()) {
+                $teachers[] = $teacher_row['firstname'] . ' ' . $teacher_row['lastname'];
+            }
+        }
+
+        // Fetch subjects
+        $subject_ids = explode(',', $class_data['subject_id']);
+        $subjects = [];
+        if (!empty($subject_ids)) {
+            $subject_id_placeholders = implode(',', array_fill(0, count($subject_ids), '?'));
+            $subject_qry = $conn->prepare("SELECT code FROM subject_list WHERE id IN ($subject_id_placeholders)");
+            $subject_qry->bind_param(str_repeat('i', count($subject_ids)), ...$subject_ids);
+            $subject_qry->execute();
+            $subject_result = $subject_qry->get_result();
+            while ($subject_row = $subject_result->fetch_assoc()) {
+                $subjects[] = $subject_row['code'];
+            }
+        }
     } else {
         $class_name = 'N/A';
         $class_id = 'N/A';
-        $teacher_name = 'N/A';
-        $subject_name = 'N/A';
+        $teachers = ['N/A'];
+        $subjects = ['N/A'];
     }
 } else {
     echo "No valid class ID specified.";
@@ -42,7 +66,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                     <i class="fa fa-plus"></i> <span style="color: #dc143c; font-weight: bold;">Add New</span>
                 </a>
             </div>
-            <!-- Back Button -->
             <a href="index.php?page=class_list" class="btn-back">
                 <i class="fa fa-arrow-left"></i> Back
             </a>
@@ -52,8 +75,8 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                 <span class="class-code" style="font-size: 24px;">| Class ID: <?php echo $class_id; ?></span>
             </div>
             <div class="teacher-details">
-                <span class="teacher-name" style="font-size: 24px;">Teacher: <?php echo $teacher_name; ?></span>
-                <span class="subject-name" style="font-size: 24px;"> | Subject: <span style="color: #dc143c; font-weight: bold; font-size: 24px;"><?php echo $subject_name; ?></span>
+                <span class="teacher-name" style="font-size: 24px;">Teacher(s): <?php echo implode(', ', $teachers); ?></span>
+                <span class="subject-name" style="font-size: 24px;"> | Subject(s): <span style="color: #dc143c; font-weight: bold; font-size: 24px;"><?php echo implode(', ', $subjects); ?></span>
             </div>
         </div>
         <div class="card-body">
@@ -70,13 +93,12 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                 <tbody>
                     <?php
                     $i = 1;
-                    // Modify the query to only fetch students belonging to the class
                     $qry = $conn->prepare("SELECT s.*, concat(s.firstname, ' ', s.lastname) as name 
                                             FROM student_list s 
                                             INNER JOIN class_list e ON s.class_id = e.id 
                                             WHERE e.id = ? 
                                             ORDER BY concat(s.firstname,' ',s.lastname) ASC");
-                    $qry->bind_param("i", $id); // Bind the $id parameter
+                    $qry->bind_param("i", $id);
                     $qry->execute();
                     $result = $qry->get_result();
 

@@ -45,57 +45,74 @@ $code = isset($code) ? $code : substr(str_shuffle("0123456789abcdefghijklmnopqrs
             <input type="text" class="form-control form-control-sm" name="section" id="section" value="<?php echo isset($section) ? $section : '' ?>" required>
         </div>
 
-        <!-- Teacher dropdown -->
         <div class="form-group">
-            <label for="teacher_id" class="control-label">Teacher</label>
-            <select name="teacher_id" id="teacher_id" class="custom-select custom-select-sm" required>
+            <label class="control-label">Teacher</label>
+            <div id="teacher_list">
                 <?php
                 $teacher = $conn->query("SELECT * FROM faculty_list ORDER BY lastname ASC");
+                $selected_teachers = isset($teacher_id) ? explode(',', $teacher_id) : []; // Split selected teachers if any
                 while($row = $teacher->fetch_assoc()):
                 ?>
-                    <option value="<?php echo $row['id'] ?>" <?php echo isset($teacher_id) && $teacher_id == $row['id'] ? 'selected' : '' ?>><?php echo $row['lastname'].", ".$row['firstname'] ?></option>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" name="teacher_id[]" 
+                            value="<?php echo $row['id']; ?>" 
+                            <?php echo in_array($row['id'], $selected_teachers) ? 'checked' : ''; ?>>
+                        <label class="form-check-label">
+                            <?php echo $row['lastname'] . ", " . $row['firstname']; ?>
+                        </label>
+                    </div>
                 <?php endwhile; ?>
-            </select>
+            </div>
         </div>
 
-        <!-- Subject dropdown -->
-        <div class="form-group">
-            <label for="subject_id" class="control-label">Subject</label>
-            <select name="subject_id" id="subject_id" class="custom-select custom-select-sm" required>
-                <?php
-                $subject = $conn->query("SELECT * FROM subject_list ORDER BY subject ASC");
-                while($row = $subject->fetch_assoc()):
-                ?>
-                    <option value="<?php echo $row['id'] ?>" <?php echo isset($subject_id) && $subject_id == $row['id'] ? 'selected' : '' ?>><?php echo $row['subject'] ?></option>
-                <?php endwhile; ?>
-            </select>
-        </div>
-    </form>
-</div>
 
-<script>
-    $(document).ready(function(){
-        $('#manage-class').submit(function(e){
-            e.preventDefault();
-            start_load();
-            $('#msg').html('');
+       <!-- Subject checkbox list -->
+            <div class="form-group">
+                <label class="control-label">Subject</label>
+                <div id="subject_list">
+                    <?php
+                    $subject = $conn->query("SELECT * FROM subject_list ORDER BY subject ASC");
+                    $selected_subjects = isset($subject_id) ? explode(',', $subject_id) : []; // Split selected subjects if any
+                    while($row = $subject->fetch_assoc()):
+                    ?>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="subject_id[]" 
+                                value="<?php echo $row['id']; ?>" 
+                                <?php echo in_array($row['id'], $selected_subjects) ? 'checked' : ''; ?>>
+                            <label class="form-check-label">
+                                <?php echo $row['subject']; ?>
+                            </label>
+                        </div>
+                    <?php endwhile; ?>
+                </div>
+            </div>
 
-            $.ajax({
-                url: 'ajax.php?action=save_class',
-                method: 'POST',
-                data: $(this).serialize(),
-                success: function(resp){
-                    if(resp == 1){
-                        alert_toast("Data successfully saved.", "success");
-                        setTimeout(function(){
-                            location.reload();
-                        }, 1750);
-                    } else if(resp == 2){
-                        $('#msg').html('<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Class already exists.</div>');
-                        end_load();
-                    }
+            <script>
+$(document).ready(function(){
+    $('#manage-class').submit(function(e){
+        e.preventDefault();
+        start_load();
+        $('#msg').html('');
+
+        $.ajax({
+            url: 'ajax.php?action=save_class',
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(resp){
+                if(resp == 1){
+                    alert_toast("Data successfully saved.", "success");
+                    setTimeout(function(){
+                        location.reload();
+                    }, 1750);
+                } else if(resp == 2){
+                    $('#msg').html('<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Class already exists.</div>');
+                } else {
+                    $('#msg').html('<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> An error occurred while saving the class. Please try again.</div>');
                 }
-            });
+                end_load();
+            }
         });
     });
+});
 </script>
+

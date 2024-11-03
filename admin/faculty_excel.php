@@ -50,17 +50,14 @@ if (isset($_FILES['excel_file'])) {
             if ($checkStmt->num_rows > 0) {
                 error_log("Duplicate entry for school_id: $school_id", 3, '../logs/error_log.txt');
             } else {
-<<<<<<< HEAD
                 $result = $conn->query("SELECT IFNULL(MAX(id), 0) + 1 AS next_id FROM faculty_list");
                 $next_id = $result->fetch_assoc()['next_id'];
 
-=======
                 // Retrieve the next available id for faculty_list
                 $result = $conn->query("SELECT IFNULL(MAX(id), 0) + 1 AS next_id FROM faculty_list");
                 $next_id = $result->fetch_assoc()['next_id'];
 
                 // Prepare and bind for insertion
->>>>>>> 0f208196f250c4f02b9e494509a34cb36d230aab
                 $stmt = $conn->prepare("INSERT INTO faculty_list (id, school_id, firstname, lastname, position, email, password) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 if (!$stmt) {
                     handleError("Prepare failed: " . $conn->error);

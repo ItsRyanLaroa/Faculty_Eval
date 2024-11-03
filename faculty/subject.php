@@ -28,8 +28,8 @@ $query = "
            sl.id AS subject_id,
            CONCAT(sl.code, ' - ', sl.subject) AS subject_name
     FROM class_list cl
-    JOIN subject_list sl ON cl.subject_id = sl.id
-    WHERE cl.teacher_id = ?
+    JOIN subject_list sl ON FIND_IN_SET(sl.id, cl.subject_id) > 0
+    WHERE FIND_IN_SET(?, cl.teacher_id) > 0
 ";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $faculty_id);
@@ -43,6 +43,7 @@ while ($row = $classes_and_subjects->fetch_assoc()) {
     $s_arr[$row['subject_id']] = $row['subject_name'];
 }
 ?>
+
 <style>
     .card-tools i{
     color: #dc143c;
