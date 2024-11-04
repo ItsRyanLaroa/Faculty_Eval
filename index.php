@@ -1,6 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+<?php 
+session_start(); // Start the session
 
+if (!isset($_SESSION['login_id'])) {
+    header('location:homepage.php');
+    exit; // Ensure no further code is executed after redirect
+}
+
+include 'db_connect.php'; // Include your database connection
+ob_start(); // Start output buffering
+
+// Initialize system settings if not already set
+if (!isset($_SESSION['system'])) {
+    $query = $conn->query("SELECT * FROM system_settings");
+    if ($query && $query->num_rows > 0) {
+        $system = $query->fetch_array();
+        foreach ($system as $k => $v) {
+            $_SESSION['system'][$k] = $v;
+        }
+    } else {
+        // Handle case where no system settings are found
+        $_SESSION['system'] = []; // or set default values
+    }
+}
+ob_end_flush();
+?>
 <style>
   .border-primary {
     border-color: #dc143c !important; 
