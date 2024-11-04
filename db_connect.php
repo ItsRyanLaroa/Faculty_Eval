@@ -1,3 +1,9 @@
-<?php 
+<?php
+// Fetch database credentials from environment variables
+$host = getenv('DB_HOST');
+$username = getenv('DB_USERNAME');
+$password = getenv('DB_PASSWORD');
+$database = getenv('DB_DATABASE');
 
-$conn= new mysqli('localhost','root','','evaluation_db')or die("Could not connect to mysql".mysqli_error($con));
+// Connect to the database
+$conn = new mysqli($host, $username, $password, $database) or die("Could not connect to MySQL: " . mysqli_error($conn));
