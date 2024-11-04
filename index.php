@@ -25,7 +25,7 @@
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
 <div class="wrapper">
   <?php include 'topbar.php' ?>
-  <?php include $_SESSION['login_view_folder'].'sidebar.php' ?>
+  <?php include 'sidebar.php' ?>
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -51,15 +51,7 @@
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
-         <?php 
-            $page = isset($_GET['page']) ? $_GET['page'] : 'home';
-            if(!file_exists($_SESSION['login_view_folder'].$page.".php")){
-                include '404.html';
-            }else{
-            include $_SESSION['login_view_folder'].$page.'.php';
-
-            }
-          ?>
+      
       </div><!--/. container-fluid -->
     </section>
     <!-- /.content -->
