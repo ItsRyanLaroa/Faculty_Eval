@@ -1,7 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <?php 
+session_start(); // Ensure you start the session
 
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Redirect if the user is not logged in
 if (!isset($_SESSION['login_id'])) {
     header('location:homepage.php');
     exit; // Ensure no further code is executed after redirect
