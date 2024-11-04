@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <?php 
-session_start(); // Start the session
+
 
 if (!isset($_SESSION['login_id'])) {
-    header('location:homepage.php');
     exit; // Ensure no further code is executed after redirect
 }
 
