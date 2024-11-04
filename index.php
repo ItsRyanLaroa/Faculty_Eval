@@ -14,7 +14,7 @@
   }
   ob_end_flush();
 
-	include 'header.php' 
+	
 ?>
 <style>
   .border-primary{
