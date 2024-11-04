@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<?php session_start() ?>
 <?php 
 	if(!isset($_SESSION['login_id']))
 	    header('location:homepage.php');
