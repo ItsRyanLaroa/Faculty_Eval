@@ -2,12 +2,13 @@
 $host = getenv('DB_HOST');
 $username = getenv('DB_USERNAME');
 $password = getenv('DB_PASSWORD');
-$dbname = getenv('DB_DATABASE');
+$database = getenv('DB_DATABASE');
 
-$conn = new mysqli($host, $username, $password, $dbname);
+// Establish the connection
+$conn = new mysqli($host, $username, $password, $database);
 
+// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-echo "Connected successfully";
 ?>
