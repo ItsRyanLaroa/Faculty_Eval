@@ -1,14 +1,16 @@
 <?php
-$host = getenv('DB_HOST');
-$username = getenv('DB_USERNAME');
-$password = getenv('DB_PASSWORD');
-$database = getenv('DB_DATABASE');
+// Establish a database connection using environment variables
+$conn = mysqli_connect(
+    getenv('DB_HOST'),        // Database host (e.g., localhost or Coolify server)
+    getenv('DB_USERNAME'),    // Database username from environment
+    getenv('DB_PASSWORD'),    // Database password from environment
+    getenv('DB_DATABASE'),    // Database name from environment
+    getenv('DB_PORT') ?: '3306' // Database port, default to 3306 if not set
+);
 
-// Establish the connection
-$conn = new mysqli($host, $username, $password, $database);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Check if the connection was successful
+if (!$conn) {
+    // Output the connection error and stop the script
+    die("Connection failed: " . mysqli_connect_error());
 }
 ?>
