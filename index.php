@@ -13,8 +13,6 @@ if(!isset($_SESSION['system'])){
     }
 }
 
-// Define a default title if not already set
-$title = "Dashboard"; // Replace "Dashboard" with an appropriate title for your page
 
 include 'header.php';
 ?>
