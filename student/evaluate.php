@@ -1,4 +1,7 @@
 <?php 
+
+
+// Function to get ordinal suffix
 function ordinal_suffix($num) {
     $num = $num % 100; // protect against large numbers
     if ($num < 11 || $num > 13) {
@@ -11,13 +14,12 @@ function ordinal_suffix($num) {
     return $num . 'th';
 }
 
-$rid = '';
-$faculty_id = '';
-$subject_id = '';
-if (isset($_GET['rid'])) $rid = $_GET['rid'];
-if (isset($_GET['fid'])) $faculty_id = $_GET['fid'];
-if (isset($_GET['sid'])) $subject_id = $_GET['sid'];
+// Initialize variables from GET parameters
+$rid = isset($_GET['rid']) ? $_GET['rid'] : '';
+$faculty_id = isset($_GET['fid']) ? $_GET['fid'] : '';
+$subject_id = isset($_GET['sid']) ? $_GET['sid'] : '';
 
+// Fetch restrictions only once
 $restriction = $conn->query("SELECT r.id, s.id as sid, f.id as fid, concat(f.firstname, ' ', f.lastname) as faculty, s.code, s.subject 
     FROM restriction_list r 
     INNER JOIN faculty_list f ON f.id = r.faculty_id 
@@ -27,6 +29,7 @@ $restriction = $conn->query("SELECT r.id, s.id as sid, f.id as fid, concat(f.fir
     AND r.id NOT IN (SELECT restriction_id FROM evaluation_list 
     WHERE academic_id = {$_SESSION['academic']['id']} 
     AND student_id = {$_SESSION['login_id']})");
+
 ?>
 
 <style>
@@ -37,10 +40,6 @@ $restriction = $conn->query("SELECT r.id, s.id as sid, f.id as fid, concat(f.fir
         border-color: black;
     }
 
-    .list-group-item.active {
-      border: #dc143c !important;
-    }
-
     .card-info.card-outline {
         border-top: 3px solid #dc143c !important;
     }
@@ -49,39 +48,31 @@ $restriction = $conn->query("SELECT r.id, s.id as sid, f.id as fid, concat(f.fir
         border-color: #dc143c !important;
         margin-bottom: 20px;
         margin-top: 20px;
-     }
+    }
 
     .bg-gradient-secondary {
         background: #007bff !important;
         color: #fff;
     }
-
 </style>
 
 <div class="col-lg-12">
     <div class="row">
         <div class="col-md-3">
             <div class="list-group">
-                           <?php 
-// Initialize variables outside the loop to prevent overwriting on each iteration
-$firstItemSet = false; // Track if the first item has been set
-
-while ($row = $restriction->fetch_array()):
-    // Set default selection for the first item if no 'rid' is provided in the URL
-    if (!$firstItemSet && empty($rid)) {
-        $rid = $row['id'];
-        $faculty_id = $row['fid'];
-        $subject_id = $row['sid'];
-        $firstItemSet = true; // Mark the first item as set
-    }
-?>
-    <!-- Use 'active' class if the current item matches the selected 'rid' -->
-    <a class="list-group-item list-group-item-action <?php echo isset($rid) && $rid == $row['id'] ? 'active' : '' ?>" 
-        href="./index.php?page=evaluate&rid=<?php echo $row['id'] ?>&sid=<?php echo $row['sid'] ?>&fid=<?php echo $row['fid'] ?>">
-        <?php echo ucwords($row['faculty']) . ' - (' . $row["code"] . ') ' . $row['subject'] ?>
-    </a>
-<?php endwhile; ?>
-
+                <?php 
+                while ($row = $restriction->fetch_array()):
+                    if (empty($rid)) {
+                        $rid = $row['id'];
+                        $faculty_id = $row['fid'];
+                        $subject_id = $row['sid'];
+                    }
+                ?>
+                <a class="list-group-item list-group-item-action <?php echo isset($rid) && $rid == $row['id'] ? 'active' : '' ?>" 
+                    href="./index.php?page=evaluate&rid=<?php echo $row['id'] ?>&sid=<?php echo $row['sid'] ?>&fid=<?php echo $row['fid'] ?>">
+                    <?php echo ucwords($row['faculty']) . ' - (' . $row["code"] . ') ' . $row['subject'] ?>
+                </a>
+                <?php endwhile; ?>
             </div>
         </div>
         <div class="col-md-9">
@@ -158,6 +149,7 @@ while ($row = $restriction->fetch_array()):
 
 <script>
     $(document).ready(function(){
+        // Check the status of the academic session
         if('<?php echo $_SESSION['academic']['status'] ?>' == 0){
             uni_modal("Information", "<?php echo $_SESSION['login_view_folder'] ?>not_started.php");
         } else if('<?php echo $_SESSION['academic']['status'] ?>' == 2){
