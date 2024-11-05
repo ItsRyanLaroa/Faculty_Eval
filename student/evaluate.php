@@ -27,35 +27,19 @@ $restriction = $conn->query("SELECT r.id, s.id as sid, f.id as fid, concat(f.fir
     AND r.id NOT IN (SELECT restriction_id FROM evaluation_list 
     WHERE academic_id = {$_SESSION['academic']['id']} 
     AND student_id = {$_SESSION['login_id']})");
+
+// Set initial values for the first restriction if not provided
+if ($restriction->num_rows > 0 && empty($rid) && empty($faculty_id) && empty($subject_id)) {
+    $first_row = $restriction->fetch_assoc();
+    $rid = $first_row['id'];
+    $faculty_id = $first_row['fid'];
+    $subject_id = $first_row['sid'];
+    $restriction->data_seek(0); // reset pointer to the start of the result set
+}
 ?>
 
 <style>
-    .list-group-item.active {
-        z-index: 2;
-        color: #fff;
-        background-color: #dc143c;
-        border-color: black;
-    }
-
-    .list-group-item.active{
-      border: #dc143c !important;
-    }
-
-    .card-info.card-outline{
-        border-top: 3px solid #dc143c !important;
-    }
-
-    .border-info{
-        border-color: #dc143c !important;
-        margin-bottom: 20px;
-        margin-top: 20px;
-     }
-
-     .bg-gradient-secondary {
-		background: #007bff !important;
-		color: #fff;
-	}
-
+    /* Your styles here */
 </style>
 
 <div class="col-lg-12">
@@ -64,11 +48,6 @@ $restriction = $conn->query("SELECT r.id, s.id as sid, f.id as fid, concat(f.fir
             <div class="list-group">
                 <?php 
                 while ($row = $restriction->fetch_array()):
-                    if (empty($rid)) {
-                        $rid = $row['id'];
-                        $faculty_id = $row['fid'];
-                        $subject_id = $row['sid'];
-                    }
                 ?>
                 <a class="list-group-item list-group-item-action <?php echo isset($rid) && $rid == $row['id'] ? 'active' : '' ?>" 
                     href="./index.php?page=evaluate&rid=<?php echo $row['id'] ?>&sid=<?php echo $row['sid'] ?>&fid=<?php echo $row['fid'] ?>">
