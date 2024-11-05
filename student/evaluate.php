@@ -1,6 +1,5 @@
 <?php 
 
-
 // Function to get ordinal suffix
 function ordinal_suffix($num) {
     $num = $num % 100; // protect against large numbers
@@ -61,18 +60,23 @@ $restriction = $conn->query("SELECT r.id, s.id as sid, f.id as fid, concat(f.fir
         <div class="col-md-3">
             <div class="list-group">
                 <?php 
+                $displayed_ids = []; // Array to track displayed IDs
                 while ($row = $restriction->fetch_array()):
                     if (empty($rid)) {
                         $rid = $row['id'];
                         $faculty_id = $row['fid'];
                         $subject_id = $row['sid'];
                     }
+                    if (!in_array($row['id'], $displayed_ids)) { // Check if ID has already been displayed
+                        $displayed_ids[] = $row['id']; // Add ID to the array
                 ?>
                 <a class="list-group-item list-group-item-action <?php echo isset($rid) && $rid == $row['id'] ? 'active' : '' ?>" 
                     href="./index.php?page=evaluate&rid=<?php echo $row['id'] ?>&sid=<?php echo $row['sid'] ?>&fid=<?php echo $row['fid'] ?>">
                     <?php echo ucwords($row['faculty']) . ' - (' . $row["code"] . ') ' . $row['subject'] ?>
                 </a>
-                <?php endwhile; ?>
+                <?php 
+                    } // End of ID check
+                endwhile; ?>
             </div>
         </div>
         <div class="col-md-9">
@@ -204,7 +208,7 @@ $restriction = $conn->query("SELECT r.id, s.id as sid, f.id as fid, concat(f.fir
             });
         });
 
-        // Initial check to ensure the submit button state is correct
+        // Initial check for enabling submit button
         checkFormCompletion();
     });
 </script>
