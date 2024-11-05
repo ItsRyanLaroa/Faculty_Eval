@@ -31,7 +31,7 @@ function ordinal_suffix($num) {
             $student_id = $_SESSION['login_id'];
 
             // Fetch unique evaluations for the logged-in student
-            $evaluations = $conn->query("SELECT DISTINCT 
+            $evaluations = $conn->query("SELECT 
                 CONCAT(f.lastname, ', ', f.firstname) AS faculty_name,
                 sl.subject,
                 a.year AS academic_year,
@@ -45,7 +45,14 @@ function ordinal_suffix($num) {
             LEFT JOIN class_list cl ON r.class_id = cl.id
             LEFT JOIN academic_list a ON r.academic_id = a.id
             WHERE r.student_id = '$student_id'
-            GROUP BY r.student_id, f.id, sl.subject, a.year, cl.id
+            GROUP BY 
+                faculty_name, 
+                sl.subject, 
+                academic_year, 
+                class_details, 
+                cl.curriculum,
+                r.faculty_id,
+                f.avatar
             ORDER BY f.lastname ASC");
 
             while ($row = $evaluations->fetch_assoc()): 
