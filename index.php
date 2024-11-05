@@ -1,29 +1,29 @@
-<?php session_start() ?>
-<!DOCTYPE html>
-<html lang="en">
-
 <?php 
-	if(!isset($_SESSION['login_id']))
-	    header('location:homepage.php');
-    include 'db_connect.php';
-    ob_start();
-  if(!isset($_SESSION['system'])){
+session_start();
+if(!isset($_SESSION['login_id'])) {
+    header('location:homepage.php');
+    exit;
+}
+include 'db_connect.php';
 
+if(!isset($_SESSION['system'])){
     $system = $conn->query("SELECT * FROM system_settings")->fetch_array();
     foreach($system as $k => $v){
-      $_SESSION['system'][$k] = $v;
+        $_SESSION['system'][$k] = $v;
     }
-  }
-  ob_end_flush();
+}
 
-	include 'header.php' 
+include 'header.php';
 ?>
-<style>
-  .border-primary{
-    border-color: #dc143c !important; 
-  }
-</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    .border-primary { border-color: #dc143c !important; }
+  </style>
+</head>
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+<div class="wrapper">ition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
 <div class="wrapper">
   <?php include 'topbar.php' ?>
   <?php include $_SESSION['login_view_folder'].'sidebar.php' ?>
